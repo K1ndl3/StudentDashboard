@@ -10,15 +10,19 @@ function Login() {
     const logInSubmit = async () =>{
         try {
         const res = await fetch("auth/dev-token", {
-            method : "Post",
+            method : "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({token})
         })
 
-        if (res.ok) {
+        if (res.status == 204) {
             navigate("/dashboard")
-        } else {
-            alert("Invalid Token. Try again")
+        } else if (res.status == 401) {
+            alert("Invalid Token. Please try again with the correct token.")
+        } else if (res.status == 403) {
+            alert("Token does not have privilege to access resource.")
+        }else {
+            alert("Canvas API Not Available. Please try the guest features.")
             } 
         }catch (err) {
       console.error(err);
@@ -43,6 +47,11 @@ function Login() {
                     onClick={logInSubmit}
                 >
                     Log in
+                </button>
+                <button className="test-button"
+                    onClick={() => navigate("/dashboard")}
+                >
+                    Test Dashboard
                 </button>
             </div>
         </div>
