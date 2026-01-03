@@ -9,7 +9,7 @@ function Login() {
 
     const logInSubmit = async () =>{
         try {
-        const res = await fetch("auth/dev-token", {
+        const res = await fetch("/auth/dev-token", {
             method : "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({token})
@@ -35,6 +35,10 @@ function Login() {
             <div className="text">
                 <h3 className="login-title">Scholar Sync</h3>
                 <h1>Welcome</h1>
+                <svg className="scholar-hat" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 50 15 L 85 35 L 85 40 Q 85 45 80 45 L 65 45 L 65 55 Q 65 60 60 60 L 40 60 Q 35 60 35 55 L 35 45 L 20 45 Q 15 45 15 40 L 15 35 Z" fill="rgb(63, 41, 186)" stroke="rgb(63, 41, 186)" strokeWidth="3"/>
+                    <path d="M 50 65 L 50 75" stroke="rgb(63, 41, 186)" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
             </div>
             <div className="button-bar">
                 <input className="input"
@@ -49,9 +53,9 @@ function Login() {
                     Log in
                 </button>
                 <button className="test-button"
-                    onClick={() => navigate("/dashboard")}
+                    onClick={() => navigate("/guest-dashboard")}
                 >
-                    Test Dashboard
+                    Log in as Guest
                 </button>
             </div>
         </div>

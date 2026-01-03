@@ -1,0 +1,48 @@
+
+.timer-container{
+    border-radius: 20px;
+    background-color: rgba(100, 60, 255, 0.04);
+    border: 1px solid rgba(100, 60, 255, 0.12);
+    padding: 14px;
+    width: 41vw;
+    box-sizing: border-box;
+    margin-top: 10px;
+    height: calc(72vh - 10px);
+    max-height: calc(76vh - 10px);
+    overflow: hidden;
+    transition: height 220ms ease;
+}
+
+.timer-header{ display:flex; align-items:center; justify-content:space-between; }
+.timer-header h2{ margin:0; color: rgb(100, 60, 255);
+    font-size: 30px;
+    font-weight: 500; }
+.icon-button{ background: transparent; border: none; cursor:pointer }
+
+.timer-body{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.progress-wrap{ position:relative; width:180px; height:180px; }
+.progress-circle{ transform: rotate(-90deg); }
+.timer-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color: #eaeaff }
+.mode-label{ font-size:14px; color: rgba(230,230,255,0.9) }
+.time-display{ font-size:28px; font-weight:700; margin-top:6px }
+.cycle-count{ font-size:12px; margin-top:6px; color: rgba(230,230,255,0.7) }
+
+.timer-actions{ display:flex; gap:10px }
+.start-button, .reset-button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600 }
+.start-button{ background: rgb(100,60,255); color:white }
+.reset-button{ background: rgba(255,255,255,0.06); color:#eee }
+
+
+.timer-container.expanded{
+    height: calc(72vh - 10px + 220px);
+    max-height: calc(76vh - 10px + 220px);
+    overflow: visible;
+}
+
+.settings-panel{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(0,0,0,0.12); display:flex; flex-direction:column; gap:8px }
+.settings-row{ display:flex; justify-content:space-between; align-items:center; gap:12px }
+.settings-row label{ color: #eaeaff }
+.settings-row input{ width:80px; padding:6px; border-radius:6px; background:#111; color:#fff; border:1px solid rgba(255,255,255,0.06) }
+.settings-actions{ display:flex; gap:8px; justify-content:flex-end }
+.save-button{ background: rgb(100,60,255); color:white; border:none; padding:8px 12px; border-radius:8px }
+.cancel-button{ background: rgba(255,255,255,0.06); color:#eee; border:none; padding:8px 12px; border-radius:8px }

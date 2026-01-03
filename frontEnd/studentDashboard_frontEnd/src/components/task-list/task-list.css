@@ -1,0 +1,85 @@
+.tasklist-container {
+    height: 75vh;
+    width: 40vw;
+    border: solid;
+    border-radius: 20px;
+    margin: 10px;
+    background-color: rgba(100, 60, 255, 0.04);
+    border: 1px solid rgba(100, 60, 255, 0.18);
+    padding: 18px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+h1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(100, 60, 255);
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.task-input-row{
+    display: flex;
+    gap: 12px;
+    margin: 12px 0 8px 0;
+}
+
+.task-input, .edit-input{
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #111;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+.add-button, .edit-button, .delete-button, .save-button, .cancel-button {
+    background: rgb(100, 60, 255);
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.add-button:hover, .edit-button:hover, .save-button:hover { background: rgb(120,80,255); }
+.delete-button, .cancel-button { background: rgba(255,255,255,0.08); color: #eee; border: 1px solid rgba(255,255,255,0.04); }
+
+.task-list{
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+    overflow: auto;
+}
+
+.task-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+}
+
+.task-text{
+    cursor: pointer;
+    flex: 1;
+    transition: color 0.2s ease, opacity 0.2s ease, text-decoration-color 0.2s ease;
+    text-decoration-line: line-through;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+}
+
+.task-item.completed .task-text{
+    text-decoration-color: rgba(255,255,255,0.7);
+    opacity: 0.6;
+    color: #e6e6ff;
+}
+
+.controls{ display: flex; gap: 8px; align-items: center; margin-left: 12px; }
