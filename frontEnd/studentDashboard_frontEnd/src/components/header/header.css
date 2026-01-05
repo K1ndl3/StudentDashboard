@@ -1,0 +1,73 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.size-6 {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.guest-wrapper {
+  position: relative; /* dropdown absolute to this */
+}
+
+.guest-button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.guest-user {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+
+.sign-out-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 0.5rem;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+  min-width: 100px;
+  z-index: 100;
+}
+
+.sign-out-menu.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.sign-out-button {
+  width: 100%;
+  padding: 0.5rem;
+  cursor: pointer;
+  text-align: right;
+  font-weight: 500;
+  transition: background 100ms ease;
+}
+
+.sign-out-button:hover {
+  background-color: rgba(100, 60, 255, 0.1);
+  border-radius: 4px;
+}

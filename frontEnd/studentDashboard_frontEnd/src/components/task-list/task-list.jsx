@@ -6,8 +6,7 @@ function TaskList() {
         try {
             const raw = localStorage.getItem("taskList")
             return raw ? JSON.parse(raw) : [
-                { id: 1, text: "Finish java homework", completed: false },
-                { id: 2, text: "Finish assembly homework", completed: false }
+                { id: 1, text: "Enter a Task", completed: false },
             ]
         } catch (e) { return [] }
     })

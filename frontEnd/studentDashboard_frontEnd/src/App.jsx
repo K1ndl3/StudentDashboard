@@ -3,8 +3,8 @@ import './App.css'
 import Login from './components/login/login'
 import DashBoard from './components/dashboard/dashboard';
 import GuestDashboard from './components/guest-dashboard/guest-dashboard';
-import Focus from './components/focus/focus';
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import Calendar from './components/calendar/calendar';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/dashboard" element={<DashBoard/>}/>
         <Route path="/guest-dashboard" element={<GuestDashboard/>}/>
-        <Route path="/focus" element={<Focus/>}/>
+        <Route path="/calendar" element={<Calendar/>}/>
       </Routes>
     </BrowserRouter>
     </>

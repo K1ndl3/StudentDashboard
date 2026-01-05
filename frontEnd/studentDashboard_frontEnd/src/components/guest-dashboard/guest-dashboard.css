@@ -3,10 +3,7 @@
     width: 40px;
 }
 
-.guest-dashboard-container {
-    width: 100vw;
-    height: 99vh;   
-}
+
 
 .header{
     display: flex;
@@ -59,4 +56,14 @@ main {
     flex-direction: column ;
     gap: 13px;
     width: 30%;
+}
+
+.guest-button {
+    height: 80px;
+    width: 80px;
+    padding-top: 28px;
+}
+
+.sign-out-button {
+    width: 80px;
 }

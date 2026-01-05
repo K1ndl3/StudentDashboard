@@ -59,7 +59,7 @@ function Timer() {
     const dash = circumference * progress
 
     const toggle = () => setIsRunning(r => !r)
-    const reset = () => { setIsRunning(false); setSecondsLeft(workMin * 60); setMode("work") }
+    const reset = () => { setIsRunning(false); setSecondsLeft(workMin * 60); setMode("work"); setCycles(0) }
 
     const saveSettings = (w, b) => {
         const wNum = Math.max(1, Math.floor(Number(w) || 25))
