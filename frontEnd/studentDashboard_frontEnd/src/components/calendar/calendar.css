@@ -1,3 +1,9 @@
 .calendar-container {
 
 }
+
+.calendar-container main {
+    display: flex;
+    flex-direction: row;
+    gap: 20px
+}

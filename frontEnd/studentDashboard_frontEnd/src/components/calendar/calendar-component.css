@@ -1,0 +1,33 @@
+
+.calendar-component-container {
+
+    border: 1px solid rgba(100, 60, 255, 0.18);
+    height: 76vh;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: rgba(100, 60, 255, 0.04);
+}
+
+.calendar-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.day-of-week {
+    width: 93%;
+    display: flex;
+    flex-direction: row;
+    border: 4px solid rgba(100, 60, 255, 0.18);
+    border-radius: 20px;
+    justify-content: space-evenly
+}
+
+.day {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: ;
+}
