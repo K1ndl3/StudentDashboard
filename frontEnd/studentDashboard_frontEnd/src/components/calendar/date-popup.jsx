@@ -1,0 +1,24 @@
+import "./date-popup.css"
+
+
+function DatePopup({isoDate, onClose}) {
+
+    return (
+        <div className="popup-container">
+            <div className="popup-header">
+                <h2>{isoDate}</h2>
+                <button
+                    className="popup-button"
+                    onClick={onClose}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+
+                </button>
+            </div>
+        </div>
+    )
+}
+
+export default DatePopup
