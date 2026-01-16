@@ -7,6 +7,7 @@ function DatePopup({isoDate, onClose}) {
     const [events, setEvent] = useState([])
     const [detail, setDetail] = useState("")
     const [time, setTime] = useState("")
+    const [editId, setEditId] = useState(null)
 
     useEffect(() => {
         const stored = JSON.parse(localStorage.getItem(isoDate)) || []
@@ -15,7 +16,6 @@ function DatePopup({isoDate, onClose}) {
 
     const handleAddEvents = () => {
         if (!detail.trim()) return
-        const now = new Date();
         const newEvent = {
             id: crypto.randomUUID(),
             details: detail,
@@ -30,6 +30,33 @@ function DatePopup({isoDate, onClose}) {
         setTime("")
     }
 
+    const handleDelete = (id) => {
+        const newArr = events.filter(evnt => evnt.id !== id)
+        if (newArr.length === 0) {
+            localStorage.removeItem(isoDate)
+            setEvent(newArr)
+        } else {
+            setEvent(newArr)
+            localStorage.setItem(isoDate, JSON.stringify(newArr))
+        }
+    }
+    const startEdit = (event) => {
+        setEditId(event.id)
+        setDetail(event.details)
+        setTime(event.currtime)
+    }
+    const handleEdit = (id) => {
+        const newArr = events.map(element => 
+            (element.id === id) ? 
+            {...element, details: detail, currtime: time} :
+            element
+        )
+        setEvent(newArr)
+        localStorage.setItem(isoDate, JSON.stringify(newArr))
+        setEditId(null)
+        setDetail("")
+        setTime("")
+    }
     return (
         <div className="popup-container">
             <div className="popup-header">
@@ -66,18 +93,37 @@ function DatePopup({isoDate, onClose}) {
                         {events.map((evnt, evnt_index) => (
                             <li key={evnt.id} className="event-item">
                                     <span className="event-data">
-                                        <h2 className="event-detail">{evnt.details}</h2>
-                                        <p className="event-time">
-                                           starts at: {evnt.currtime ? evnt.currtime : "invalid time"}
-                                        </p>
+                                        {(editId && editId === evnt.id) ? <>
+                                            <div className="edit-event-input">
+                                                <input type="text" 
+                                                className="edit-event-detail"
+                                                placeholder="enter details"
+                                                value={detail}
+                                                onChange={e => setDetail(e.target.value)}/>
+                                                <input type="time"
+                                                className="edit-event-time"
+                                                placeholder="enter time"
+                                                value={time} 
+                                                onChange={e => setTime(e.target.value)}/>
+                                            </div>
+                                        </> : <>
+                                            <h2 className="event-detail">{evnt.details}</h2>
+                                            <p className="event-time">
+                                               starts at: {evnt.currtime ? evnt.currtime : "invalid time"}
+                                            </p>
+                                        </>}
                                     </span>
                                     <span className="event-button">
-                                        <button className="delete-button">
-                                            delete
-                                        </button>
-                                        <button className="edit-button">
-                                            edit
-                                        </button>
+
+                                        {(editId && editId === evnt.id) ? <button className="close-edit-button"
+                                                            onClick={() => setEditId(null)}>close</button> :
+                                                    <button className="delete-button"
+                                                            onClick={() => handleDelete(evnt.id)}>delete</button>}
+                                        {(editId && editId === evnt.id) ? 
+                                            <button className="save-edit-button"
+                                                    onClick={() => handleEdit(evnt.id)}>save</button> : 
+                                            <button className="edit-button"
+                                                    onClick={() => startEdit(evnt)}>edit</button>}
                                     </span>
                             </li>
                         ))}

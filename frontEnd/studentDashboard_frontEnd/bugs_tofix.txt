@@ -1,0 +1,1 @@
+1) in the days in the calendar component. if a day's event is totally empty after everything has been deleted, its icon is still rendering

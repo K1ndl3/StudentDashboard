@@ -39,7 +39,7 @@ function CalendarComponent() {
             } else {
                 const isoDate = `${currYear}-${String(currMonth + 1).padStart(2, "0")}-${String(date).padStart(2, "0")}`;
                 const hasEvent = localStorage.getItem(isoDate) ? true : false;
-                padArr.push({ dayNumber: date, isoDate, hasEvent });
+                padArr.push({ date, isoDate, hasEvent });
                 date += 1;
             }
         }
@@ -94,7 +94,7 @@ function CalendarComponent() {
                         <li key={date_index}>
                             <Day
                                 key={date_index}
-                                dayNumber={date.dayNumber}
+                                dayNumber={date.date}
                                 isoDate={date.isoDate}
                                 hasEvent={date.hasEvent}
                                 onClick={handleClick}

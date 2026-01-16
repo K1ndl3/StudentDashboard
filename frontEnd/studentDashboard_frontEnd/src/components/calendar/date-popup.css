@@ -65,3 +65,40 @@ h2{
     height: 50px;
     color: grey;
 }
+
+.edit-event-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.edit-event-input input {
+    background: #2f2e34;
+    border-radius: 5px;
+    border: 1px solid #333;
+}
+
+.save-edit-button {
+    background: rgb(100, 60, 255);
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.close-edit-button {
+    background-color: rgba(255,255,255,0.08);
+    border: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.event-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
