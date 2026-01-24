@@ -1,10 +1,10 @@
 import Header from "../header/header"
 import "./dashboard.css"
-
+import Header from "../header/header"
 function DashBoard() {
     
     return (<>
-        <Header userName={"user1"}></Header>
+        dashboard
     </>)
 }
 
