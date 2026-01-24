@@ -1,0 +1,65 @@
+[33mcommit 3ba2928f897adbc86f0dd06e9743e055cc2e2de8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Fri Jan 16 15:35:50 2026 -0800
+
+    finished all guest features. maybe polish features later
+
+[33mcommit e134d2020b07d99fed73811a1e1ac800c25b3587[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Sat Jan 10 21:12:39 2026 -0800
+
+    finished the adding event functionality of the calendar. TODO: finish delete and edit task
+
+[33mcommit d5c5a44eb28a3de80a50f166d4e66175d8961cbc[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Fri Jan 9 19:05:41 2026 -0800
+
+    finished calendar view. Todo: finish popup component with crud operations for adding, deleting, and editing events
+
+[33mcommit e778c55c651ae204f9d8d9bbc6946d7e3eacda15[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Mon Jan 5 20:15:02 2026 -0800
+
+    added skeleton for the calendar
+
+[33mcommit 706ee80fb79bd195b90601ae76dd60677f9dda46[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Sun Jan 4 18:02:01 2026 -0800
+
+    changed feature from focus to calendar mode
+
+[33mcommit 7c4b7e2065646b0fde686a8752aba191200fe054[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Fri Jan 2 20:14:52 2026 -0800
+
+    finished guest dashboard. Work on focus page for guest features next and to finish all of guest features
+
+[33mcommit e4cf40eb5b068b6bb5af8264be682adb11705267[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Wed Dec 31 13:44:23 2025 -0800
+
+    started on service layer of backend. finished log in page
+
+[33mcommit 7d98d1779ce9aa8c4132c65a898adade34ae2b1a[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Mon Dec 29 17:54:55 2025 -0800
+
+    finished log in page and routing for front end. Need to start on backend for token verification
+
+[33mcommit 18dad3b8df422e0ff68a1930018c50ac9906e535[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Sun Nov 23 22:21:12 2025 -0800
+
+    started on login page
+
+[33mcommit 9471faee57476f015aa0d5ca57cb6616a159d11b[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Sun Nov 23 22:08:58 2025 -0800
+
+    started project folder
+
+[33mcommit 875aba3708a80cd2f2b16bf09be84c004ece9041[m
+Author: K1ndl3 <HUYBUI02@csu.fullerton.edu>
+Date:   Sun Nov 23 22:06:07 2025 -0800
+
+    first commit
