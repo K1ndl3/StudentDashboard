@@ -1,7 +1,5 @@
 package com.cornelius.StudentDashboard.dto.user;
 
-import org.apache.catalina.User;
-
 public class UserDto {
     private Integer id;
     private String name;
@@ -11,7 +9,6 @@ public class UserDto {
     }
 
     public void setName(String name) {
-        
         this.name = name;
     }
 

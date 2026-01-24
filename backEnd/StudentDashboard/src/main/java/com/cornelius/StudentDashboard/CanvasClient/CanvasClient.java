@@ -4,7 +4,6 @@ import com.cornelius.StudentDashboard.Exception.CanvasUnavailableException;
 import com.cornelius.StudentDashboard.Exception.InsufficientScopeException;
 import com.cornelius.StudentDashboard.Exception.InvalidTokenException;
 import com.cornelius.StudentDashboard.dto.user.UserDto;
-import org.apache.catalina.User;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;

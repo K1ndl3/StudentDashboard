@@ -1,10 +1,11 @@
-    package com.cornelius.StudentDashboard.CanvasAuthController;
+    package com.cornelius.StudentDashboard.controller.CanvasAuthController;
 
-    import com.cornelius.StudentDashboard.CanvasAuthService.CanvasAuthService;
     import com.cornelius.StudentDashboard.Exception.CanvasUnavailableException;
     import com.cornelius.StudentDashboard.Exception.InsufficientScopeException;
     import com.cornelius.StudentDashboard.Exception.InvalidTokenException;
     import com.cornelius.StudentDashboard.dto.auth.DevTokenRequest;
+    import com.cornelius.StudentDashboard.service.CanvasAuthService.CanvasAuthService;
+
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.PostMapping;
