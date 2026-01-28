@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import alertSound from "../../assets/alert-444816.mp3"
 import "./timer.css"
 
 const THEME = "rgb(100, 60, 255)"
@@ -17,8 +18,18 @@ function Timer() {
     const [secondsLeft, setSecondsLeft] = useState(() => (Number(localStorage.getItem("pom_work")) || 25) * 60)
     const [cycles, setCycles] = useState(() => Number(localStorage.getItem("pom_cycles")) || 0)
     const [showSettings, setShowSettings] = useState(false)
+    const [audioCount, setAudioCount] = useState(4)
+    const audioRef = useRef(new Audio(alertSound))
 
     const intervalRef = useRef(null)
+
+    const playAlert = async () => {
+        for (let count = 0; count < audioCount; count++) {
+            audioRef.current.currentTime = 0;
+            await audioRef.current.play();
+            await new Promise(res => audioRef.addEventListener("ended", res, { once: true }))
+        }
+    }
 
     useEffect(() => { localStorage.setItem("pom_work", workMin) }, [workMin])
     useEffect(() => { localStorage.setItem("pom_break", breakMin) }, [breakMin])
@@ -41,6 +52,7 @@ function Timer() {
 
     useEffect(() => {
         if (secondsLeft <= 0) {
+            playAlert()
             if (mode === "work") {
                 setCycles(c => c + 1)
                 setMode("break")
