@@ -27,11 +27,7 @@ function Timer() {
         const audio = audioRef.current
         for (let count = 0; count < audioCount; count++) {
             audio.currentTime = 0;
-             try {
-                await audio.play()
-            } catch (err) {
-                return
-            }
+            await audio.play()
             await new Promise(res => audio.addEventListener("ended", res, { once: true }))
         }
     }
