@@ -26,8 +26,13 @@ function Timer() {
     const playAlert = async () => {
         for (let count = 0; count < audioCount; count++) {
             audioRef.current.currentTime = 0;
-            await audioRef.current.play();
-            await new Promise(res => audioRef.addEventListener("ended", res, { once: true }))
+             try {
+                await audio.play()
+            } catch (err) {
+                // playback blocked (autoplay policy) — abort further attempts
+                return
+            }
+            await new Promise(res => audio.addEventListener("ended", res, { once: true }))
         }
     }
 
