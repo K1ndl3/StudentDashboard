@@ -24,12 +24,12 @@ function Timer() {
     const intervalRef = useRef(null)
 
     const playAlert = async () => {
+        const audio = audioRef.current
         for (let count = 0; count < audioCount; count++) {
-            audioRef.current.currentTime = 0;
+            audio.currentTime = 0;
              try {
                 await audio.play()
             } catch (err) {
-                // playback blocked (autoplay policy) — abort further attempts
                 return
             }
             await new Promise(res => audio.addEventListener("ended", res, { once: true }))
