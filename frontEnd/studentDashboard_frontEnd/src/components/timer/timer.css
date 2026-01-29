@@ -31,7 +31,6 @@
 .start-button, .reset-button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600 }
 .start-button{ background: rgb(100,60,255); color:white }
 .reset-button{ background: rgba(255,255,255,0.06); color:#eee }
-.restroom-break-button { background: rgba(255,255,255,0.06); color:#eee }
 
 
 .timer-container.expanded{

@@ -21,6 +21,7 @@ function Timer() {
     const [audioCount, setAudioCount] = useState(2)
     const audioRef = useRef(new Audio(alertSound))
     const [onBreak, setOnBreak] = useState(false)
+    const [timeRemaining, setTimeRemaining] = useState()
     const [breakTime, setBreakTime] = useState()
 
     const intervalRef = useRef(null)
@@ -39,10 +40,8 @@ function Timer() {
     useEffect(() => { localStorage.setItem("pom_cycles", cycles) }, [cycles])
 
     useEffect(() => {
-        if (!isRunning) {
-            setSecondsLeft(mode === "work" ? workMin * 60 : breakMin * 60)
-        }
-    }, [workMin, breakMin, mode, isRunning])
+        setSecondsLeft(mode === "work" ? workMin * 60 : breakMin * 60)
+    }, [workMin, breakMin, mode])
 
     useEffect(() => { // driver function for the timer
         if (isRunning) {
@@ -122,7 +121,6 @@ function Timer() {
                 <div className="timer-actions">
                     <button className="start-button" onClick={toggle}>{isRunning ? 'Pause' : 'Start'}</button>
                     <button className="reset-button" onClick={reset}>Reset</button>
-                    <button className="restroom-break-button" onClick={() => setOnBreak(prev => !prev)}>on break</button>
                 </div>
             </div>
 
