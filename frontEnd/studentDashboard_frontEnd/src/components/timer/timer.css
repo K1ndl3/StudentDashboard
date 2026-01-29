@@ -31,6 +31,7 @@
 .start-button, .reset-button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600 }
 .start-button{ background: rgb(100,60,255); color:white }
 .reset-button{ background: rgba(255,255,255,0.06); color:#eee }
+.restroom-break-button { background: rgba(255,255,255,0.06); color:#eee }
 
 
 .timer-container.expanded{
@@ -38,6 +39,7 @@
     max-height: calc(76vh - 10px + 220px);
     overflow: visible;
 }
+
 
 .settings-panel{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(0,0,0,0.12); display:flex; flex-direction:column; gap:8px }
 .settings-row{ display:flex; justify-content:space-between; align-items:center; gap:12px }

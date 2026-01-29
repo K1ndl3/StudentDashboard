@@ -18,8 +18,10 @@ function Timer() {
     const [secondsLeft, setSecondsLeft] = useState(() => (Number(localStorage.getItem("pom_work")) || 25) * 60)
     const [cycles, setCycles] = useState(() => Number(localStorage.getItem("pom_cycles")) || 0)
     const [showSettings, setShowSettings] = useState(false)
-    const [audioCount, setAudioCount] = useState(4)
+    const [audioCount, setAudioCount] = useState(2)
     const audioRef = useRef(new Audio(alertSound))
+    const [onBreak, setOnBreak] = useState(false)
+    const [breakTime, setBreakTime] = useState()
 
     const intervalRef = useRef(null)
 
@@ -42,7 +44,7 @@ function Timer() {
         }
     }, [workMin, breakMin, mode, isRunning])
 
-    useEffect(() => {
+    useEffect(() => { // driver function for the timer
         if (isRunning) {
             intervalRef.current = setInterval(() => {
                 setSecondsLeft(prev => prev - 1)
@@ -50,6 +52,8 @@ function Timer() {
         }
         return () => clearInterval(intervalRef.current)
     }, [isRunning])
+    // this function basically checks the boolean based on the state of the isRunning. If we ever flip this state, our timer gets resetted to 0
+    // we need to make sure that clear interval does not run when we pause
 
     useEffect(() => {
         if (secondsLeft <= 0) {
@@ -118,6 +122,7 @@ function Timer() {
                 <div className="timer-actions">
                     <button className="start-button" onClick={toggle}>{isRunning ? 'Pause' : 'Start'}</button>
                     <button className="reset-button" onClick={reset}>Reset</button>
+                    <button className="restroom-break-button" onClick={() => setOnBreak(prev => !prev)}>on break</button>
                 </div>
             </div>
 
