@@ -4,7 +4,7 @@ import com.cornelius.StudentDashboard.dto.course.enrollment.Enrollment;
 import java.util.List;
 
 public class CourseDTO {
-    private String id;
+    private Long id;
     private String name;
     private List<Enrollment> enrollments;
 
@@ -16,11 +16,11 @@ public class CourseDTO {
         this.enrollments = enrollments;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -32,7 +32,7 @@ public class CourseDTO {
         this.name = name;
     }
 
-    public CourseDTO(String id, String name, List<Enrollment> enrollments) {
+    public CourseDTO(Long id, String name, List<Enrollment> enrollments) {
         this.id = id;
         this.name = name;
         this.enrollments = enrollments;

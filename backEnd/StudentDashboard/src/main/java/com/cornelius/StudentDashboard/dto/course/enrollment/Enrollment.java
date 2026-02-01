@@ -1,30 +1,35 @@
 package com.cornelius.StudentDashboard.dto.course.enrollment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Enrollment {
-    private String computed_current_grade;
-    private String computed_current_score;
 
-    public String getComputed_current_grade() {
-        return computed_current_grade;
+    @JsonProperty("computed_current_grade")
+    private String computedCurrentGrade;
+
+    @JsonProperty("computed_current_score")
+    private Double computedCurrentScore;
+
+    public Enrollment() {}
+
+    public Enrollment(String computedCurrentGrade, Double computedCurrentScore) {
+        this.computedCurrentGrade = computedCurrentGrade;
+        this.computedCurrentScore = computedCurrentScore;
     }
 
-    public void setComputed_current_grade(String computed_current_grade) {
-        this.computed_current_grade = computed_current_grade;
+    public String getComputedCurrentGrade() {
+        return computedCurrentGrade;
     }
 
-    public String getComputed_current_score() {
-        return computed_current_score;
+    public void setComputedCurrentGrade(String computedCurrentGrade) {
+        this.computedCurrentGrade = computedCurrentGrade;
     }
 
-    public void setComputed_current_score(String computed_current_score) {
-        this.computed_current_score = computed_current_score;
+    public Double getComputedCurrentScore() {
+        return computedCurrentScore;
     }
 
-    public Enrollment(String computed_current_grade, String computed_current_score) {
-        this.computed_current_grade = computed_current_grade;
-        this.computed_current_score = computed_current_score;
-    }
-
-    public Enrollment() {
+    public void setComputedCurrentScore(Double computedCurrentScore) {
+        this.computedCurrentScore = computedCurrentScore;
     }
 }

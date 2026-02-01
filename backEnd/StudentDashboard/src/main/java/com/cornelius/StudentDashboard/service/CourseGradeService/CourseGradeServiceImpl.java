@@ -1,12 +1,15 @@
 package com.cornelius.StudentDashboard.service.CourseGradeService;
 
+import org.springframework.stereotype.Service;
+
 import com.cornelius.StudentDashboard.CanvasClient.CanvasClient;
 import com.cornelius.StudentDashboard.dto.course.CourseDTO;
 
+@Service
 public class CourseGradeServiceImpl implements CoursegradeService{
     private final CanvasClient client;
     CourseGradeServiceImpl(CanvasClient client) { this.client = client; }
-    public CourseDTO getCourseGrades(String token) {
+    public CourseDTO[] getCourseGrades(String token) {
         return client.getCourseInfo(token);
     }
 }

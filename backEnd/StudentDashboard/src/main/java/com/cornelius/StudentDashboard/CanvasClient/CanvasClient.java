@@ -64,8 +64,8 @@ public class CanvasClient {
         }
     }
 
-    public CourseDTO getCourseInfo(String token) {
-        String endpoint = "/api/v1/courses?enrollment_state&include[]=total_scores";
+    public CourseDTO[] getCourseInfo(String token) {
+        String endpoint = "v1/courses?enrollment_state=active&include[]=enrollments&include[]=total_scores";
         String url = BASE_URL_CSUF + endpoint;
         HttpHeaders header = new HttpHeaders();
         header.setBearerAuth(token);
@@ -73,8 +73,9 @@ public class CanvasClient {
 
         RestTemplate rt = new RestTemplate();
         try {
-            ResponseEntity<CourseDTO> response = rt.exchange(url, HttpMethod.GET, entity, CourseDTO.class);
-            return response.getBody();
+            ResponseEntity<CourseDTO[]> response = rt.exchange(url, HttpMethod.GET, entity, CourseDTO[].class);
+            CourseDTO[] courses = response.getBody();
+            return courses;
         }  catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 throw new InvalidTokenException();
