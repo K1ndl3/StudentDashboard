@@ -3,6 +3,7 @@ package com.cornelius.StudentDashboard.CanvasClient;
 import com.cornelius.StudentDashboard.Exception.CanvasUnavailableException;
 import com.cornelius.StudentDashboard.Exception.InsufficientScopeException;
 import com.cornelius.StudentDashboard.Exception.InvalidTokenException;
+import com.cornelius.StudentDashboard.dto.assignment.AssignmentDTO;
 import com.cornelius.StudentDashboard.dto.course.CourseDTO;
 import com.cornelius.StudentDashboard.dto.user.UserDto;
 import org.springframework.http.*;
@@ -26,6 +27,7 @@ public class CanvasClient {
         HttpEntity<Void> entity = new HttpEntity<>(header);
 
         try {
+            @SuppressWarnings("unused")
             ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, entity, String.class);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -77,6 +79,31 @@ public class CanvasClient {
             CourseDTO[] courses = response.getBody();
             return courses;
         }  catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new InvalidTokenException();
+            }
+            if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                throw new InsufficientScopeException("Under Leveled Privilege");
+            }
+            throw e;
+        } catch (HttpServerErrorException | ResourceAccessException e) {
+            throw new CanvasUnavailableException("Canvas in unvailable");
+        }
+    }
+
+    public AssignmentDTO[] getAssignments(Long course_id, String token) {
+        String url = "v1/courses/" + course_id + "/assignments";
+        String fullUrl = BASE_URL_CSUF + url;
+
+        RestTemplate rt = new RestTemplate();
+        HttpHeaders header = new HttpHeaders();
+        header.setBearerAuth(token);
+        HttpEntity<Void> entity = new HttpEntity<>(header);
+
+        try {
+            ResponseEntity<AssignmentDTO[]> response = rt.exchange(fullUrl, HttpMethod.GET, entity, AssignmentDTO[].class);
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 throw new InvalidTokenException();
             }
