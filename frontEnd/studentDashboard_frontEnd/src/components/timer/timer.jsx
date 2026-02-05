@@ -86,8 +86,38 @@ function Timer() {
     const circumference = 2 * Math.PI * 70 // r=70
     const dash = circumference * progress
 
-    const toggle = () => setIsRunning(r => !r)
-    const reset = () => { setIsRunning(false); targetRef.current = null; setSecondsLeft(workMin * 60); setMode("work"); setCycles(0) }
+    const toggle = () => {
+        // if currently running -> pause: save remaining seconds to localStorage and stop the timer
+        if (isRunning) {
+            try { localStorage.setItem('pom_paused_seconds', String(secondsLeft)) } catch (e) {}
+            targetRef.current = null
+            setIsRunning(false)
+            return
+        }
+
+        // resuming: prefer any paused time from localStorage (replace secondsLeft), then start
+        const stored = Number(localStorage.getItem('pom_paused_seconds'))
+        if (!Number.isNaN(stored) && stored > 0) {
+            setSecondsLeft(stored)
+            targetRef.current = Date.now() + stored * 1000
+            try { localStorage.removeItem('pom_paused_seconds') } catch (e) {}
+            setIsRunning(true)
+            return
+        }
+
+        // normal start when no paused value present
+        targetRef.current = Date.now() + (secondsLeft * 1000)
+        setIsRunning(true)
+    }
+
+    const reset = () => { 
+        setIsRunning(false); 
+        targetRef.current = null; 
+        try { localStorage.removeItem('pom_paused_seconds') } catch (e) {}
+        setSecondsLeft(workMin * 60); 
+        setMode("work"); 
+        setCycles(0) 
+    }
 
     const saveSettings = (w, b) => {
         const wNum = Math.max(1, Math.floor(Number(w) || 25))
