@@ -25,6 +25,7 @@ function Timer() {
     const [breakTime, setBreakTime] = useState()
 
     const intervalRef = useRef(null)
+    const targetRef = useRef(null)
 
     const playAlert = async () => {
         const audio = audioRef.current
@@ -43,16 +44,23 @@ function Timer() {
         setSecondsLeft(mode === "work" ? workMin * 60 : breakMin * 60)
     }, [workMin, breakMin, mode])
 
-    useEffect(() => { // driver function for the timer
+    useEffect(() => { // driver function for the timer using epoch diffs
         if (isRunning) {
+            // set target if not present (start or resume)
+            if (!targetRef.current) {
+                targetRef.current = Date.now() + (secondsLeft * 1000)
+            }
+
             intervalRef.current = setInterval(() => {
-                setSecondsLeft(prev => prev - 1)
-            }, 1000)
+                if (!targetRef.current) return
+                const remaining = Math.max(0, Math.ceil((targetRef.current - Date.now()) / 1000))
+                setSecondsLeft(remaining)
+            }, 500)
         }
+
         return () => clearInterval(intervalRef.current)
     }, [isRunning])
-    // this function basically checks the boolean based on the state of the isRunning. If we ever flip this state, our timer gets resetted to 0
-    // we need to make sure that clear interval does not run when we pause
+    
 
     useEffect(() => {
         if (secondsLeft <= 0) {
@@ -60,10 +68,14 @@ function Timer() {
             if (mode === "work") {
                 setCycles(c => c + 1)
                 setMode("break")
-                setSecondsLeft(breakMin * 60)
+                const newSec = breakMin * 60
+                setSecondsLeft(newSec)
+                if (isRunning) targetRef.current = Date.now() + newSec * 1000
             } else {
                 setMode("work")
-                setSecondsLeft(workMin * 60)
+                const newSec = workMin * 60
+                setSecondsLeft(newSec)
+                if (isRunning) targetRef.current = Date.now() + newSec * 1000
             }
         }
     }, [secondsLeft, mode, breakMin, workMin])
@@ -75,7 +87,7 @@ function Timer() {
     const dash = circumference * progress
 
     const toggle = () => setIsRunning(r => !r)
-    const reset = () => { setIsRunning(false); setSecondsLeft(workMin * 60); setMode("work"); setCycles(0) }
+    const reset = () => { setIsRunning(false); targetRef.current = null; setSecondsLeft(workMin * 60); setMode("work"); setCycles(0) }
 
     const saveSettings = (w, b) => {
         const wNum = Math.max(1, Math.floor(Number(w) || 25))
@@ -84,6 +96,13 @@ function Timer() {
         setBreakMin(bNum)
         setShowSettings(false)
     }
+
+    // when work/break/min or mode change while running, reset the target so timing stays accurate
+    useEffect(() => {
+        if (isRunning && targetRef.current) {
+            targetRef.current = Date.now() + (secondsLeft * 1000)
+        }
+    }, [workMin, breakMin, mode])
 
     return (
         <div className={`timer-container ${showSettings ? 'expanded' : ''}`}>
