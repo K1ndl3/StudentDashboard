@@ -17,7 +17,7 @@ public class CanvasCourseController {
 
     @GetMapping("/courses")
     public ResponseEntity<CourseDTO[]> getCourseInfo(@RequestHeader("Authorization") String tokenHeader) {
-        String token = tokenHeader.replace("Bearer ", "");
+        String token = tokenHeader.replace("Bearer", "");
         try {
             return ResponseEntity.ok(service.getCourseGrades(token));
         } catch (InvalidTokenException e) {

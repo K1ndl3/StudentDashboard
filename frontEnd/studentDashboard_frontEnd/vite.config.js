@@ -9,6 +9,10 @@ export default defineConfig({
       '/auth': {
         target: 'http://localhost:9090',
         changeOrigin: true
+      },
+      '/courses' : {
+        target: 'http://localhost:9090',
+        changeOrigin: true
       }
     }
   }
