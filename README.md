@@ -85,5 +85,6 @@ This app centralizes academic data (courses, assignments, grades, calendar event
 
 Designed to simplify academic workload visibility and build full-stack engineering skills through real-world API integration and layered backend architecture.
 
-![Guest User ScreenShoot](./README_asset/[Scholar_sync1].png)
 ![Guest User Log-in](./README_asset/[Scholar_sync2].png)
+![Guest User Focus-page](./README_asset/[Scholar_sync1].png)
+![Guest User Calendar](./README_asset/ScholarSync3.png)
