@@ -137,7 +137,7 @@ function Timer() {
     return (
         <div className={`timer-container ${showSettings ? 'expanded' : ''}`}>
             <div className="timer-header">
-                <h2>Pomodoro</h2>
+                <h2>Timer</h2>
                 <div className="timer-controls">
                     <button className="icon-button" title="Settings" onClick={() => setShowSettings(s => !s)}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
