@@ -52,7 +52,6 @@ function Header({ userName = "Guest", title = "Scholar Sync" }) {
           </span>
         </button>
 
-        {/* Dropdown menu */}
         <div className={`sign-out-menu ${open ? "open" : ""}`}>
           <button className="sign-out-button" onClick={() => setSignOut(true)}>
             Sign Out

@@ -64,7 +64,6 @@ This app centralizes academic data (courses, assignments, grades, calendar event
 
 - Dev token sent via request headers (not request body)
 - Frontend route protection implemented
-- Backend HTTPS configurable
 - DTO separation prevents overexposing data
 
 ---

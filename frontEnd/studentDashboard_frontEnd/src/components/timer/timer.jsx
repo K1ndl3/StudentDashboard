@@ -20,6 +20,7 @@ function Timer() {
     const [showSettings, setShowSettings] = useState(false)
     const [audioCount, setAudioCount] = useState(2)
     const audioRef = useRef(new Audio(alertSound))
+    // idk maybe refactor later
     const [onBreak, setOnBreak] = useState(false)
     const [timeRemaining, setTimeRemaining] = useState()
     const [breakTime, setBreakTime] = useState()
