@@ -27,7 +27,6 @@ public class CanvasClient {
         HttpEntity<Void> entity = new HttpEntity<>(header);
 
         try {
-            @SuppressWarnings("unused")
             ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, entity, String.class);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
