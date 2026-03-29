@@ -21,19 +21,23 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.io.InputStream;
 
+@org.springframework.stereotype.Component
 public class parserImpl implements parser{
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private final CalendarBuilder builder = new CalendarBuilder();
     @Override
     public List<CanvasEvent> parseIcs(InputStream input) {
+        AtomicLong idGenerator = new AtomicLong(1);
         List<CanvasEvent> listEvent = new ArrayList<>();
-        // follows the builder patter
-        CalendarBuilder builder = new CalendarBuilder();
         Calendar calendar = null;
         try {
+            // remember to check list event is empty or not when using the parserimpl later
             calendar = builder.build(input);
         } catch (Exception e) {
             System.err.println("Error: The ICS file format is invalid. " + e.getMessage());
+            return listEvent;
         }
+        if (calendar == null)
+        return listEvent;
 
         // iterate thru calendar
         for (Object component : calendar.getComponents(Component.VEVENT)) {
