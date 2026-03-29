@@ -4,6 +4,6 @@ import java.util.List;
 
 import com.ScholarSync.backend.event.canvas_event.CanvasEvent;
 
-public interface parser {
+public interface Parser {
     public List<CanvasEvent> parseIcs(InputStream input);
 }

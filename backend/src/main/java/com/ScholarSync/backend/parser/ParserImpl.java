@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.io.InputStream;
 
 @org.springframework.stereotype.Component
-public class parserImpl implements parser{
+public class ParserImpl implements Parser{
     private final CalendarBuilder builder = new CalendarBuilder();
     @Override
     public List<CanvasEvent> parseIcs(InputStream input) {
