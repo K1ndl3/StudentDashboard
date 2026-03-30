@@ -17,4 +17,15 @@ public class CanvasEvent extends Event{
         this.description = description;
         this.summary = summary;
     }
+
+    public LocalDateTime getDueDate() {
+        return this.dueDate;
+    }
+    public String getSummary() {
+        return this.summary;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
 }

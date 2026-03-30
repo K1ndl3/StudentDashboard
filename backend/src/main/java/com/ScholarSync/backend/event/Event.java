@@ -10,4 +10,12 @@ public class Event {
         this.id = id;
         this.type = type;   
     }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getType() {
+        return this.type;
+    }
 }
