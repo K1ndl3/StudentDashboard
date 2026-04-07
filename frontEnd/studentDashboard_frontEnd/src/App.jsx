@@ -7,6 +7,7 @@ import Calendar from './components/calendar/calendar';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from './components/AuthContext/AuthContext';
 import { ProtectedRoute } from './components/protected-route/ProtectedRoute';
+import Register from './components/register/register';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/register" element={<Register/>}></Route>
             <Route path="/login" element={<Login/>} />
             <Route path="/dashboard" element={
               <ProtectedRoute>

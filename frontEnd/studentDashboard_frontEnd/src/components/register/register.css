@@ -1,0 +1,30 @@
+.register-container {
+    margin-top: 70px;
+    border-radius: 16px;
+    width: 30vw;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    background-color: #252525;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    gap: 15px;
+}
+
+.register-container input {
+    background-color: #1a1a1a;
+    border: 1px solid #404040;
+    border-radius: 8px;
+    height: 50px;
+    min-height: 50px;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    padding: 0 16px;
+    color: white;
+    font-size: 14px;
+    line-height: 50px;
+    transition: all 0.3s ease;
+}

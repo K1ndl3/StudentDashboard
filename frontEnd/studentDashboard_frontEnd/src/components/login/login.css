@@ -1,6 +1,6 @@
 
 .login-container{
-    margin-top: 70px;
+    margin-top: 50px;
     border-radius: 16px;
     width: 30vw;
     height: 70vh;
@@ -22,7 +22,7 @@
     align-items: center;
     color: white;
     text-align: center;
-    padding-top: 10px;
+    padding-top: 0px;
 }
 
 .text h3 {
@@ -128,4 +128,31 @@
     padding-top: 20px;
     margin-top: 20px;
     transform: scale(2.5);
+}
+
+.button-span {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;;
+}
+
+.button-span .register-button {
+    color: white;
+    background-color: rgb(63, 41, 186);
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.register-button:hover {
+    background-color: rgb(79, 57, 206);
+    box-shadow: 0 8px 24px rgba(63, 41, 186, 0.3);
+    transform: translateY(-2px);
+}
+
+.register-button:active {
+    transform: translateY(0);
 }

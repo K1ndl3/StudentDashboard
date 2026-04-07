@@ -4,6 +4,8 @@ import { useState } from "react"
 
 
 function Login() {
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
     const [token, setToken] = useState("")
     const navigate = useNavigate()
 
@@ -12,7 +14,10 @@ function Login() {
         const res = await fetch("/auth/dev-token", {
             method : "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({token})
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
         })
 
         if (res.status == 204) {
@@ -44,19 +49,30 @@ function Login() {
                 <input className="input"
                     type="password"
                     value={token}
-                    placeholder="Canvas Developer Token"
-                    onChange={e => setToken(e.target.value)}>
+                    placeholder="Username"
+                    onChange={e => setUsername(e.target.value)}>
+                </input>
+                <input className="input"
+                    type="password"
+                    value={token}
+                    placeholder="Password"
+                    onChange={e => setPassword(e.target.value)}>
                 </input>
                 <button className="login-button"
                     onClick={logInSubmit}
                 >
                     Log in
                 </button>
-                <button className="test-button"
-                    onClick={() => navigate("/guest-dashboard")}
-                >
-                    Log in as Guest
-                </button>
+                <span className="button-span">
+                    <button className="test-button"
+                        onClick={() => navigate("/guest-dashboard")}
+                    >
+                        Log in as Guest
+                    </button>
+                    <button className="register-button"
+                            onClick={() => navigate("/register")}
+                    >Register</button>
+                </span>
             </div>
         </div>
     )
