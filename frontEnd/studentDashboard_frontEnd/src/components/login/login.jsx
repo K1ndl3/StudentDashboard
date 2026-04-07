@@ -11,7 +11,7 @@ function Login() {
 
     const logInSubmit = async () =>{
         try {
-        const res = await fetch("/auth/dev-token", {
+        const res = await fetch("/auth/login", {
             method : "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
@@ -25,9 +25,9 @@ function Login() {
         } else if (res.status == 401) {
             alert("Invalid Token. Please try again with the correct token.")
         } else if (res.status == 403) {
-            alert("Token does not have privilege to access resource.")
+            alert("Username or password is incorrect. Try again")
         }else {
-            alert("Canvas API Not Available. Please try the guest features.")
+            alert("Server is not available. Try the guest feature.")
             } 
         }catch (err) {
       console.error(err);
