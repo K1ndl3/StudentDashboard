@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,8 +47,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return an empty list or default role for now
-        return List.of();
+        return Collections.singletonList(new SimpleGrantedAuthority("USER"));
     }
     @Override
     public boolean isAccountNonExpired() { return true; }

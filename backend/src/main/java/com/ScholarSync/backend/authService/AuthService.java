@@ -18,7 +18,6 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    // Spring Boot 3 will automatically inject all 4 of these beans
     public AuthService(
             PasswordEncoder encoder,
             UserDetailRepo repo,
@@ -32,12 +31,10 @@ public class AuthService {
     }
 
     public String login(String username, String password) {
-        // This line triggers the entire Spring Security check (Database lookup + Password match)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        // If we reach this line, authentication was successful
         var user = repo.findByUsername(username).orElseThrow();
         return jwtService.generateToken(user);
     }
@@ -45,16 +42,13 @@ public class AuthService {
     public TokenDTO register(RegistrationDTO request) {
         var user = new User();
         user.setUsername(request.username());
-
-        // --- THIS IS THE MISSING LINE ---
         user.setEmail(request.email());
-        // --------------------------------
-
         user.setPassword(encoder.encode(request.password()));
-
-        repo.save(user); // Hibernate will be happy now!
-
+        
+        repo.save(user);
+        
         var jwtToken = jwtService.generateToken(user);
+        
         return new TokenDTO(jwtToken);
     }
 }
