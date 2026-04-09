@@ -4,6 +4,9 @@ import com.ScholarSync.backend.dto.RegistrationDTO;
 import com.ScholarSync.backend.dto.TokenDTO;
 import com.ScholarSync.backend.user.User;
 import com.ScholarSync.backend.user.UserDetailRepo;
+
+import ch.qos.logback.core.subst.Token;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,25 +33,27 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public String login(String username, String password) {
+    public TokenDTO login(String username, String password) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
         var user = repo.findByUsername(username).orElseThrow();
-        return jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user);
+        
+        return TokenDTO.builder().token(jwtToken).build();
     }
 
     public TokenDTO register(RegistrationDTO request) {
         var user = new User();
-        user.setUsername(request.username());
-        user.setEmail(request.email());
-        user.setPassword(encoder.encode(request.password()));
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(encoder.encode(request.getPassword()));
         
         repo.save(user);
         
         var jwtToken = jwtService.generateToken(user);
         
-        return new TokenDTO(jwtToken);
+        return TokenDTO.builder().token(jwtToken).build();
     }
 }

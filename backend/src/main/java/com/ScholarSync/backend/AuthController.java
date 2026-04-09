@@ -8,11 +8,13 @@ import com.ScholarSync.backend.dto.TokenDTO;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -29,10 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> authenticate(
-            @Valid
-            @RequestBody LoginDTO request) {
-        String token = service.login(request.username(), request.password());
-        return ResponseEntity.ok(new TokenDTO(token));
+    public ResponseEntity<TokenDTO> authenticate(@RequestBody LoginDTO request) {
+        return ResponseEntity.ok(service.login(request.username(), request.password()));
     }
 }

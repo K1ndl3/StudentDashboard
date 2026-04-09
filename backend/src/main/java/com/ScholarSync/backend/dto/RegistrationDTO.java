@@ -1,12 +1,14 @@
 package com.ScholarSync.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
 
-public record RegistrationDTO(
-        @NotBlank(message = "username cannot be blank")
-        String username,
-        @NotBlank(message = "password cannot be blank")
-        String password,
-        @NotBlank(message = "email cannot be blank")
-        String email
-) {}
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Data
+@RequiredArgsConstructor
+public class RegistrationDTO{
+
+        private String username;
+        private String password;
+        private String email;
+}
