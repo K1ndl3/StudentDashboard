@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.dto;
+package com.ScholarSync.backend.authentication.dto;
 
 
 import lombok.Data;

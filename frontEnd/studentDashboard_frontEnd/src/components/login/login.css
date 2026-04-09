@@ -156,3 +156,24 @@
 .register-button:active {
     transform: translateY(0);
 }
+
+.button-span .forgot-password-button {
+    color: white;
+    background-color: rgb(63, 41, 186);
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.forgot-password-button:hover {
+    background-color: rgb(79, 57, 206);
+    box-shadow: 0 8px 24px rgba(63, 41, 186, 0.3);
+    transform: translateY(-2px);
+}
+
+.forgot-password-button:active {
+    transform: translateY(0);
+}

@@ -1,34 +1,42 @@
-import { createContext, useContext, useEffect, useState } from "react";
+// AuthContext.js
+import { createContext, useContext, useState, useEffect } from "react";
 
-const AuthContext = createContext(null)
+const AuthContext = createContext(null);
 
-export function AuthProvider({children}) {
-    const [isAuth, setIsAuth] = useState(false)
+export function AuthProvider({ children }) {
+    const [isAuth, setIsAuth] = useState(false);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
-        const storedAuth = localStorage.getItem("isAuth")
-        if (storedAuth === "true") {
-            setIsAuth(true)
+        const storedToken = localStorage.getItem("token");
+        if (storedToken) {
+            setIsAuth(true);
+            setToken(storedToken);
         }
-    }, [])
-    
-    const login = () => {
-        setIsAuth(true)
-        localStorage.setItem("isAuth", "true")
-    }
+    }, []);
+
+    const login = (userToken) => {
+        setIsAuth(true);
+        setToken(userToken);
+        localStorage.setItem("token", userToken);
+    };
 
     const logout = () => {
-        setIsAuth(false)
-        localStorage.removeItem("isAuth")
-    }
+        setIsAuth(false);
+        setToken(null);
+        localStorage.removeItem("token");
+    };
 
     return (
-        <AuthContext.Provider value={{isAuth, login, logout}}>
+        <AuthContext.Provider value={{ isAuth, token, login, logout }}>
             {children}
         </AuthContext.Provider>
-    )
+    );
 }
 
-export default function useAuth() {
-    return useContext(AuthContext)
+// This is the hook your ProtectedRoute and Login use
+export function useAuth() {
+    return useContext(AuthContext);
 }
+
+export default useAuth;

@@ -1,9 +1,9 @@
-package com.ScholarSync.backend;
+package com.ScholarSync.backend.authentication;
 
-import com.ScholarSync.backend.authService.AuthService;
-import com.ScholarSync.backend.dto.LoginDTO;
-import com.ScholarSync.backend.dto.RegistrationDTO;
-import com.ScholarSync.backend.dto.TokenDTO;
+import com.ScholarSync.backend.authentication.authService.AuthService;
+import com.ScholarSync.backend.authentication.dto.LoginDTO;
+import com.ScholarSync.backend.authentication.dto.RegistrationDTO;
+import com.ScholarSync.backend.authentication.dto.TokenDTO;
 
 import jakarta.validation.Valid;
 
@@ -32,6 +32,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> authenticate(@RequestBody LoginDTO request) {
-        return ResponseEntity.ok(service.login(request.username(), request.password()));
+        return ResponseEntity.ok(service.login(request.getEmail(), request.getPassword()));
     }
 }

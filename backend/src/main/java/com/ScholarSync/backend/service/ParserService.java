@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.service.parser_service;
+package com.ScholarSync.backend.service;
 
 import java.util.List;
 import com.ScholarSync.backend.event.canvas_event.CanvasEvent;

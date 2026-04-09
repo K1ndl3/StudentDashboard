@@ -4,30 +4,32 @@ import { useState } from "react"
 
 
 function Login() {
-    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [token, setToken] = useState("")
     const navigate = useNavigate()
 
     const logInSubmit = async () =>{
         try {
-        const res = await fetch("/auth/login", {
+        const res = await fetch("http://localhost:8080/auth/login", {
             method : "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify({
-                username: username,
-                password: password
+                email,
+                password
             })
         })
 
-        if (res.status == 204) {
+        if (res.ok) {
+            const data = await res.json()
             navigate("/dashboard")
-        } else if (res.status == 401) {
-            alert("Invalid Token. Please try again with the correct token.")
-        } else if (res.status == 403) {
+        } else if (res.status === 401) {
+            alert("Account Unauthorized.")
+        } else if (res.status === 403) {
             alert("Username or password is incorrect. Try again")
         }else {
-            alert("Server is not available. Try the guest feature.")
+            alert("Server is not available or Log in information is missing.")
             } 
         }catch (err) {
       console.error(err);
@@ -47,22 +49,23 @@ function Login() {
             </div>
             <div className="button-bar">
                 <input className="input"
-                    type="password"
-                    value={token}
-                    placeholder="Username"
-                    onChange={e => setUsername(e.target.value)}>
+                    type="text"
+                    placeholder="Email"
+                    onChange={e => setEmail(e.target.value)}>
                 </input>
                 <input className="input"
-                    type="password"
-                    value={token}
+                    type="text"
                     placeholder="Password"
                     onChange={e => setPassword(e.target.value)}>
                 </input>
-                <button className="login-button"
-                    onClick={logInSubmit}
-                >
-                    Log in
-                </button>
+                <span className="button-span">
+                    <button className="login-button"
+                        onClick={logInSubmit}
+                    >
+                        Log in
+                    </button>
+                    <button className="forgot-password-button">Forgot Password</button>
+                </span>
                 <span className="button-span">
                     <button className="test-button"
                         onClick={() => navigate("/guest-dashboard")}

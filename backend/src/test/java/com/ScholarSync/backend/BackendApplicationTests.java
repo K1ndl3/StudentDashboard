@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ScholarSync.backend.event.canvas_event.CanvasEvent;
-import com.ScholarSync.backend.service.parser_service.ParserService;
+import com.ScholarSync.backend.service.ParserService;
 
 @SpringBootTest
 class BackendApplicationTests {

@@ -4,18 +4,50 @@ import "./register.css"
 
 
 function Register() {
-    const [name, setName] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
     const navigate = useNavigate()
 
+    const submitRegistration = async () => {
+
+        try {
+            const response = await fetch('http://localhost:8080/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    email: email
+                })
+            })
+    
+            const data = await response.json();
+            console.log(data)
+            
+        if (response.ok) {
+                localStorage.setItem('token', data.token);
+                alert("Registration successful!");
+                navigate("/login")
+            } else if (response.status === 400) {
+            alert("Cannot register. Check your fields")
+                setErrors(data); 
+            } else if (response.status === 409) {
+                alert(data.message || "User already exists!");
+            }
+        } catch (error) {
+            console.error("Connection failed:", error);
+        }
+    }
 
     return (<>
         <div className="register-container">
             <h1>Register Your Account </h1>
             <input type="text"
                    placeholder="Enter username"
-                   onChange={(e) => setName(e.target.value)} />
+                   onChange={(e) => setUsername(e.target.value)} />
             <input type="text"
                    placeholder="Enter password"
                    onChange={(e) => setPassword(e.target.value)} />
@@ -24,7 +56,9 @@ function Register() {
                    onChange={(e) => setEmail(e.target.value)} />
 
             <span className="button-span">
-                <button>Register</button>
+                <button
+                   onClick={submitRegistration}
+                >Register</button>
                 <button
                     onClick={() => navigate("/login")}
                 >Back to Log-in</button>

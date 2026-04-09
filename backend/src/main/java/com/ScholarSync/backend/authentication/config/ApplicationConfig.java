@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.config;
+package com.ScholarSync.backend.authentication.config;
 
 import com.ScholarSync.backend.user.UserDetailRepo;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findByEmail(username)
+        return email -> repository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 

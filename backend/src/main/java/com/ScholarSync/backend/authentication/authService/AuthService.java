@@ -1,7 +1,7 @@
-package com.ScholarSync.backend.authService;
+package com.ScholarSync.backend.authentication.authService;
 
-import com.ScholarSync.backend.dto.RegistrationDTO;
-import com.ScholarSync.backend.dto.TokenDTO;
+import com.ScholarSync.backend.authentication.dto.RegistrationDTO;
+import com.ScholarSync.backend.authentication.dto.TokenDTO;
 import com.ScholarSync.backend.user.User;
 import com.ScholarSync.backend.user.UserDetailRepo;
 
@@ -33,12 +33,12 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public TokenDTO login(String username, String password) {
+    public TokenDTO login(String email, String password) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
+                new UsernamePasswordAuthenticationToken(email, password)
         );
 
-        var user = repo.findByUsername(username).orElseThrow();
+        var user = repo.findByEmail(email).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         
         return TokenDTO.builder().token(jwtToken).build();

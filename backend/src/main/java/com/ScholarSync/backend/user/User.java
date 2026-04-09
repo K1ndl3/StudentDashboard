@@ -46,6 +46,9 @@ public class User implements UserDetails {
     public String getPassword() { return this.password; }
 
     @Override
+    public String getUsername() { return this.email; }
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("USER"));
     }

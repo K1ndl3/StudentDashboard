@@ -1,6 +1,5 @@
-package com.ScholarSync.backend.config;
+package com.ScholarSync.backend.authentication.config;
 
-import com.ScholarSync.backend.config.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.ScholarSync.backend.authentication.config.JwtAuthenticationFilter;
 
 import java.util.Arrays;
 
@@ -35,7 +36,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
+            .authorizeHttpRequests(auth -> auth
             .requestMatchers("/auth/**").permitAll()
             .anyRequest().authenticated() 
         )

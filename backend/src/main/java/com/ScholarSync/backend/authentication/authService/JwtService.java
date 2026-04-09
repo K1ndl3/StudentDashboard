@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.authService;
+package com.ScholarSync.backend.authentication.authService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,7 +18,8 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private String secretKey = "XmfJKK67fKYLVbpfZ8rsbC2+EfIw7Jgx6Am5IYfGeMo=";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Value("${jwt.expiration}")
     private long jwtExpiration;
