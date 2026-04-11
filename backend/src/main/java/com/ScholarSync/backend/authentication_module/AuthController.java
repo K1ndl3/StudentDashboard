@@ -1,9 +1,4 @@
-package com.ScholarSync.backend.authentication;
-
-import com.ScholarSync.backend.authentication.authService.AuthService;
-import com.ScholarSync.backend.authentication.dto.LoginDTO;
-import com.ScholarSync.backend.authentication.dto.RegistrationDTO;
-import com.ScholarSync.backend.authentication.dto.TokenDTO;
+package com.ScholarSync.backend.authentication_module;
 
 import jakarta.validation.Valid;
 
@@ -13,6 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.ScholarSync.backend.authentication_module.authService.AuthService;
+import com.ScholarSync.backend.authentication_module.dto.LoginDTO;
+import com.ScholarSync.backend.authentication_module.dto.RegistrationDTO;
+import com.ScholarSync.backend.authentication_module.dto.TokenDTO;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController

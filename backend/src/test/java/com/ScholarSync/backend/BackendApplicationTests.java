@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.ScholarSync.backend.event.canvas_event.CanvasEvent;
-import com.ScholarSync.backend.service.ParserService;
+import com.ScholarSync.backend.model_module.event.canvas_event.CanvasEvent;
+import com.ScholarSync.backend.parser_module.service.ParserService;
 
 @SpringBootTest
 class BackendApplicationTests {

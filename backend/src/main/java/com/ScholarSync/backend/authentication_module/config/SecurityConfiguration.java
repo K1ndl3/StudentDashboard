@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.authentication.config;
+package com.ScholarSync.backend.authentication_module.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
@@ -16,7 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.ScholarSync.backend.authentication.config.JwtAuthenticationFilter;
+import com.ScholarSync.backend.authentication_module.config.JwtAuthenticationFilter;
 
 import java.util.Arrays;
 
@@ -37,7 +37,8 @@ public class SecurityConfiguration {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/auth/**", "/error").permitAll()
+            .requestMatchers("/api/me/**").authenticated()
             .anyRequest().authenticated() 
         )
         .sessionManagement(session -> session

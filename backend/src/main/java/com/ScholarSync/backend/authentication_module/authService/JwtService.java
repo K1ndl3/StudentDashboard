@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.authentication.authService;
+package com.ScholarSync.backend.authentication_module.authService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -32,6 +32,7 @@ public class JwtService {
         return Jwts
             .parserBuilder()
             .setSigningKey(getSignInKey())
+            .setAllowedClockSkewSeconds(1000)
             .build()
             .parseClaimsJws(token)
             .getBody();

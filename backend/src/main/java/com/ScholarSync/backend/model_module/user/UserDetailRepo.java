@@ -1,4 +1,4 @@
-package com.ScholarSync.backend.user;
+package com.ScholarSync.backend.model_module.user;
 
 import java.util.Optional;
 

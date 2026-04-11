@@ -1,6 +1,5 @@
-package com.ScholarSync.backend.authentication.config;
+package com.ScholarSync.backend.authentication_module.config;
 
-import com.ScholarSync.backend.user.UserDetailRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.ScholarSync.backend.model_module.user.UserDetailRepo;
 
 @Configuration
 public class ApplicationConfig {

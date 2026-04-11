@@ -1,6 +1,4 @@
-package com.ScholarSync.backend.parser;
-import com.ScholarSync.backend.event.canvas_event.CanvasEvent;
-
+package com.ScholarSync.backend.parser_module.parser_client;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -17,14 +15,14 @@ import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
+import com.ScholarSync.backend.model_module.event.canvas_event.CanvasEvent;
 
 @org.springframework.stereotype.Component
 public class ParserImpl implements Parser{
     private final CalendarBuilder builder = new CalendarBuilder();
+    
     @Override
     public List<CanvasEvent> parseIcs(InputStream input) {
-        AtomicLong idGenerator = new AtomicLong(1);
         List<CanvasEvent> listEvent = new ArrayList<>();
         Calendar calendar = null;
         try {
@@ -39,20 +37,19 @@ public class ParserImpl implements Parser{
 
         // iterate thru calendar
         for (Object component : calendar.getComponents(Component.VEVENT)) {
-            Long generatedId = idGenerator.getAndIncrement();
             VEvent vEvent = (VEvent) component;
 
-            // --- EXTRACT SUMMARY ---
+            //EXTRACT SUMMARY
             String summary = Optional.ofNullable(vEvent.getSummary())
                     .map(Property::getValue)
                     .orElse("No Title");
 
-            // --- EXTRACT DESCRIPTION ---
+            //EXTRACT DESCRIPTION
             String description = Optional.ofNullable(vEvent.getDescription())
                     .map(Property::getValue)
                     .orElse("");
 
-            // --- EXTRACT END DATE (DTEND) ---
+            //EXTRACT END DATE (DTEND)
             Optional<DtEnd<Temporal>> dtEndOpt = vEvent.getEndDate();
 
             LocalDateTime endDate = null;
@@ -70,8 +67,6 @@ public class ParserImpl implements Parser{
                 }
             }   
             CanvasEvent newEvent = new CanvasEvent(
-                generatedId,
-                "Canvas",
                 endDate,
                 description,
                 summary
@@ -80,4 +75,5 @@ public class ParserImpl implements Parser{
         }
         return listEvent;
     }
+
 }

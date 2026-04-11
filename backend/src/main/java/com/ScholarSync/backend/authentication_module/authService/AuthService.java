@@ -1,9 +1,9 @@
-package com.ScholarSync.backend.authentication.authService;
+package com.ScholarSync.backend.authentication_module.authService;
 
-import com.ScholarSync.backend.authentication.dto.RegistrationDTO;
-import com.ScholarSync.backend.authentication.dto.TokenDTO;
-import com.ScholarSync.backend.user.User;
-import com.ScholarSync.backend.user.UserDetailRepo;
+import com.ScholarSync.backend.authentication_module.dto.RegistrationDTO;
+import com.ScholarSync.backend.authentication_module.dto.TokenDTO;
+import com.ScholarSync.backend.model_module.user.User;
+import com.ScholarSync.backend.model_module.user.UserDetailRepo;
 
 import ch.qos.logback.core.subst.Token;
 

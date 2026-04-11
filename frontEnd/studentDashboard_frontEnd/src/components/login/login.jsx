@@ -23,6 +23,8 @@ function Login() {
 
         if (res.ok) {
             const data = await res.json()
+            localStorage.setItem('token', data.token);
+            console.log(data.token)
             navigate("/dashboard")
         } else if (res.status === 401) {
             alert("Account Unauthorized.")
