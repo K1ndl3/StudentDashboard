@@ -1,6 +1,5 @@
 package com.ScholarSync.backend.authentication_module.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

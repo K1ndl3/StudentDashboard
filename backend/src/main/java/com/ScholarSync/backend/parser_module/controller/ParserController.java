@@ -1,6 +1,5 @@
 package com.ScholarSync.backend.parser_module.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -33,21 +32,14 @@ public ResponseEntity<List<CanvasEvent>> syncEvents(
         @RequestBody CalendarLinkRequest rq) {
     
     String url = rq.getUrl();
-
-    // 1. Validate FIRST
     if (url == null || url.trim().isEmpty()) {
         return ResponseEntity.badRequest().build();
     }
-
-    // 2. Execute the service
     List<CanvasEvent> eventList = parserService.syncAndFetchCanvasEvents(url, user);
     
-    // 3. Handle an empty calendar gracefully (204 No Content instead of 400 Error)
     if (eventList.isEmpty()) {
         return ResponseEntity.noContent().build();
     }
-    
-    // 4. Return the ACTUAL list of events
     return ResponseEntity.ok(eventList);
 }
 

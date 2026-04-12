@@ -1,0 +1,5 @@
+- fix the registration endpoint
+    - no user should be able to submit if the input field is empty
+- there are some error handling for log in and registration that should be dealt with
+
+- add pom setting and regular tasks

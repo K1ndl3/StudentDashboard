@@ -11,4 +11,6 @@ public interface ParserService {
     
     public List<CanvasEvent> syncAndFetchCanvasEvents(String url, User user);
 
+    //public List<CanvasEvent> fetchFromDb(User user);
+
 }

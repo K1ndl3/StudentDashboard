@@ -59,4 +59,6 @@ public class ParserServiceImpl implements ParserService{
         return canvasEventRepository.saveAll(list);
     }
 
+    
+
 }

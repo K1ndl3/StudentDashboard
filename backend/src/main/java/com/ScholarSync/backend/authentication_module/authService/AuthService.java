@@ -5,13 +5,10 @@ import com.ScholarSync.backend.authentication_module.dto.TokenDTO;
 import com.ScholarSync.backend.model_module.user.User;
 import com.ScholarSync.backend.model_module.user.UserDetailRepo;
 
-import ch.qos.logback.core.subst.Token;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 public class AuthService {
