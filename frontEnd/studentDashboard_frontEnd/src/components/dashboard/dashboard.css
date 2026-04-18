@@ -1,3 +1,19 @@
-body{
-    color: white;
+.dashboard-container  {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  height: 98vh;
+  width: 99vw;
+  color: white;
+}
+
+.refresh-button {
+  margin-left: 13px;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }

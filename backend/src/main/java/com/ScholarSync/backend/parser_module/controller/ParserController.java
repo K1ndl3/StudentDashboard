@@ -18,7 +18,7 @@ import com.ScholarSync.backend.parser_module.service.ParserService;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/api/me/canvas-events")
+@RequestMapping("/api/canvas-events")
 public class ParserController {
     private ParserService parserService;
 

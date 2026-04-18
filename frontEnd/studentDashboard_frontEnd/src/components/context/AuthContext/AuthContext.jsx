@@ -5,7 +5,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [isAuth, setIsAuth] = useState(false);
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('token') || null);
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");

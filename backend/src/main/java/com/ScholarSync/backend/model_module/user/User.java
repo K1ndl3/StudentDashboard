@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -49,11 +47,14 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = true)
-    private String calendar_link;
+    private String calendarLink;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<CanvasEvent> canvas_event = new ArrayList<>();
+    private List<CanvasEvent> canvasEvent = new ArrayList<>();
+
+    public List<CanvasEvent> getCanvasEvents() {
+        return this.canvasEvent;
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     // create a general events class for non canvas events
@@ -62,6 +63,8 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() { return this.password; }
+
+    public String getDisplayName() { return this.username; }
 
     @Override
     public String getUsername() { return this.email; }

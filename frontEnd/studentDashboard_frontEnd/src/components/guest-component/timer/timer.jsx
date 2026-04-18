@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import alertSound from "../../assets/alert-444816.mp3"
+import alertSound from "../../../assets/alert-444816.mp3"
 import "./timer.css"
 
 const THEME = "rgb(100, 60, 255)"

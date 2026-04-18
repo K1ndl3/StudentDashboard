@@ -10,6 +10,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    color: white;
 }
 
 h1{
@@ -83,3 +84,4 @@ h1{
 }
 
 .controls{ display: flex; gap: 8px; align-items: center; margin-left: 12px; }
+

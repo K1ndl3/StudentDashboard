@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../context/AuthContext/AuthContext";
 import "./header.css";
 
 function Header({ userName = "Guest", title = "Scholar Sync" }) {
   const [open, setOpen] = useState(false);
-  const [signout, setSignOut] = useState(false);
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (signout) navigate("/login");
-  }, [signout, navigate]);
+  const handleSignOut = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header className="header">
@@ -53,7 +55,7 @@ function Header({ userName = "Guest", title = "Scholar Sync" }) {
         </button>
 
         <div className={`sign-out-menu ${open ? "open" : ""}`}>
-          <button className="sign-out-button" onClick={() => setSignOut(true)}>
+          <button className="sign-out-button" onClick={handleSignOut}>
             Sign Out
           </button>
         </div>

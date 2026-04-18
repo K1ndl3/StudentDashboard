@@ -1,0 +1,22 @@
+.event-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    
+}
+
+.event-container .summary {
+    font-size: 25px;
+
+}
+
+.event-container .event-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.delete-button {
+    border-radius: 100px;
+    border: none;
+}

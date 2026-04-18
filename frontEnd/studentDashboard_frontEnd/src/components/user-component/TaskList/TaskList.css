@@ -1,0 +1,51 @@
+.container {
+    border: 2px solid rgba(100, 60, 255, 0.18);
+    background-color: rgba(100, 60, 255, 0.04);
+    height: 700px;
+    width: 35%;
+    margin-left: 10px;
+    border-radius: 10px;
+    overflow-y: auto;
+}
+
+.container .user-task {
+    height: 60%;
+    
+}
+
+.user-task-header {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-around;
+    align-items: center;
+}
+
+.user-task-buttons {
+    display: flex;
+    flex-direction: row;
+    margin-top: 3px;
+    gap: 10px;
+}
+
+.user-task-buttons button {
+    margin-top: 10px;
+    border-radius: 100px;
+}
+
+.title {
+    font-size: 40px;
+}
+
+.user-task {
+    overflow-y: auto;
+    border: 1px solid rgba(100, 60, 255, 0.18);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.canvas-task-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
