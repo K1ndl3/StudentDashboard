@@ -1,13 +1,13 @@
 package com.ScholarSync.backend.global_context_module.service;
 
-import java.lang.foreign.Linker.Option;
+import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ScholarSync.backend.global_context_module.dto.GlobalContextDTO;
-import com.ScholarSync.backend.model_module.event.canvas_event.CanvasEventRepository;
+import com.ScholarSync.backend.model_module.event.task_event.UserTask;
+import com.ScholarSync.backend.model_module.event.task_event.UserTaskRepository;
 import com.ScholarSync.backend.model_module.user.User;
 import com.ScholarSync.backend.model_module.user.UserDetailRepo;
 
@@ -17,11 +17,13 @@ import jakarta.transaction.Transactional;
 public class GlobalContextService {
 
     private UserDetailRepo userRepository;
+    private UserTaskRepository userTaskRepository;
 
-    public GlobalContextService(UserDetailRepo userRepository) {
+    public GlobalContextService(UserDetailRepo userRepository, UserTaskRepository userTaskRepository) {
         this.userRepository = userRepository;
+        this.userTaskRepository = userTaskRepository;
     }
-
+    // this returns the user information globally 
     @Transactional
     public GlobalContextDTO getGlobalContextDTO(String currUserEmail) {
         Optional<User> user = userRepository.findByEmail(currUserEmail);
@@ -31,9 +33,32 @@ public class GlobalContextService {
         return new GlobalContextDTO(
             // returns the user's name not email this method is found the user model
             user.get().getDisplayName(),
-            user.get().getCanvasEvent()
+            user.get().getCanvasEvent(),
+            user.get().getUserTask()
         );
     }
 
+    // this will save the userTask as a list to the user
+    @Transactional
+    public String saveUserTasks(String currUserEmail, List<UserTask> tasks) {
+        Optional<User> user = userRepository.findByEmail(currUserEmail);
+        if (user.isEmpty()) {
+            throw new RuntimeException("user not found");
+        }
 
+        tasks.forEach(task -> task.setUser(user.get()));
+        userTaskRepository.saveAll(tasks);
+        return "Saved " + tasks.size() + " tasks to database";
+    }
+
+    @Transactional
+    public String deleteUserTask(String currUserEmail, Long taskId) {
+        Optional<UserTask> userTask = userTaskRepository.findByIdAndUserEmail(taskId, currUserEmail);
+        if (userTask.isEmpty()) {
+            throw new RuntimeException("task not found for user");
+        }
+
+        userTaskRepository.delete(userTask.get());
+        return "Deleted task with id " + taskId;
+    }
 }
