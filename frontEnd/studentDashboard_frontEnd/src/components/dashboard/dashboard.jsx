@@ -21,6 +21,7 @@ function DashBoard({ props }) {
         <div className="content-container">
           <Sidebar></Sidebar>
           <TaskList
+            UserTasks={userData?.user_task}
             CanvasEvent={userData?.canvas_event}  
           ></TaskList>
         </div>

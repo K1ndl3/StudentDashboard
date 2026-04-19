@@ -45,6 +45,7 @@ public class GlobalContextController {
     public ResponseEntity<String> deleteUserTask(Authentication authObject, @RequestBody UserTaskDeleteRequest rq) {
         String userEmail = authObject.getName();
         String response = globalContextService.deleteUserTask(userEmail, rq.getId());
+        System.out.println("Deleted user task with id " + rq.getId() + " for user " + userEmail);
         return ResponseEntity.ok(response);
     }
 }

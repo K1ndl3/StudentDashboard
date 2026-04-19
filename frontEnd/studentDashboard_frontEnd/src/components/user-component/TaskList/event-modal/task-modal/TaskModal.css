@@ -1,37 +1,90 @@
 .modal-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     height: 1000px;
+    margin: 12px 14px;
+    padding: 12px;
+    border: 1px solid rgba(100, 60, 255, 0.18);
+    border-radius: 12px;
+    background: rgba(100, 60, 255, 0.06);
 }
 
 .modal-container .header {
     display: flex;
     flex-direction: row;
-    width: 80%;
+    align-items: center;
+    justify-content: space-between;
+    width: 95%;
+    margin-bottom: 10px;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: rgba(100, 60, 255, 0.95);
 }
 
 .close-button {
-    border-radius: 120px;
+    border-radius: 100px;
+    height: 42px;
+    width: 42px;
+    border: 1px solid rgba(100, 60, 255, 0.3);
+    background: rgba(100, 60, 255, 0.08);
+    color: rgba(100, 60, 255, 0.95);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    background: rgba(100, 60, 255, 0.14);
 }
 
 .modal-container .body {
     display: flex;
     flex-direction: column;
-    width: 80%;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    height: 200px;
+    width: 100%;
+    align-items: stretch;
     gap: 10px;
 }
 
-.modal-container .body input{
-    height: 40%;
-    width: 100%;
+.modal-container .body .input-link {
+    height: 36px;
+    width: 90%;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(100, 60, 255, 0.28);
+    background: #16161b;
+    color: #989ba1;
+    outline: none;
+    color-scheme: dark;
 }
 
-.modal-container .body button {
-    height: 100px;
-    width: 100px;
+.modal-container .body .input-link::placeholder {
+    color: #969ca5;
+}
+
+.modal-container .body .input-link:focus {
+    border-color: rgba(100, 60, 255, 0.6);
+    box-shadow: 0 0 0 2px rgba(100, 60, 255, 0.12);
+}
+
+.modal-container .body .add-button {
+    align-self: center;
+    border-radius: 100px;
+    height: 42px;
+    width: 42px;
+    border: 1px solid rgba(100, 60, 255, 0.3);
+    background: rgba(100, 60, 255, 0.08);
+    color: rgba(100, 60, 255, 0.95);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.modal-container .body .add-button:hover {
+    background: rgba(100, 60, 255, 0.14);
 }

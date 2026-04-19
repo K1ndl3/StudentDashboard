@@ -18,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.ScholarSync.backend.model_module.event.canvas_event.CanvasEvent;
+import com.ScholarSync.backend.model_module.event.task_event.UserTask;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +58,11 @@ public class User implements UserDetails {
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTask> userTask = new ArrayList<>();
+    
+    public List<UserTask> getUserTasks() {
+        return this.userTask;
+    }
     // create a general events class for non canvas events
 
     // spring security implementations

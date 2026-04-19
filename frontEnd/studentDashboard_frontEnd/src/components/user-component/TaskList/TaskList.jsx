@@ -8,10 +8,12 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
   const [userTask, setUserTask] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [isCanvasModalOpen, setIsCanvasModalOpen] = useState(true);
+  const [isCanvasModalOpen, setIsCanvasModalOpen] = useState(false);
 
   const handleAddTask = (newTask) => {
-    setUserTask([...userTask, newTask]);
+    const updatedTasks = [...userTask, newTask];
+    setUserTask(updatedTasks);
+    handleSyncTaskArray(updatedTasks);
     console.log("added new task");
   };
 
@@ -45,7 +47,7 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
     }
   };
 
-  const handleSyncTaskArray = async () => {
+  const handleSyncTaskArray = async (tasksToSync = userTask) => {
     console.log("from function");
     const token = localStorage.getItem("token");
 
@@ -59,7 +61,7 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            userTask: userTask,
+            userTask: tasksToSync,
           }),
         },
       );

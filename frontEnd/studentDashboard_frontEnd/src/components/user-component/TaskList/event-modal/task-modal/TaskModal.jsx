@@ -1,13 +1,24 @@
 // TaskModal.js
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./TaskModal.css";
-import { useAsyncError } from "react-router-dom";
 
 function TaskModal({ isOpen, onClose, onSave }) {
 
   const [summary, setSummary] = useState("")
   const [description, setDescription] = useState("")
   const [dueDate, setDueDate] = useState("")
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.documentElement.classList.add("task-modal-open");
+    document.body.classList.add("task-modal-open");
+
+    return () => {
+      document.documentElement.classList.remove("task-modal-open");
+      document.body.classList.remove("task-modal-open");
+    };
+  }, [isOpen]);
 
   if (isOpen === false) {
     return null;
@@ -16,9 +27,11 @@ function TaskModal({ isOpen, onClose, onSave }) {
   return (
     <div className="modal-container">
       <div className="header">
-        <h1>Add Event </h1>
+        <h1 className="modal-title">Add Event</h1>
         <button
           className="close-button"
+          type="button"
+          aria-label="Close"
           onClick={() => onClose()}
         >
 
@@ -30,22 +43,31 @@ function TaskModal({ isOpen, onClose, onSave }) {
       </div>
 
       <div className="body">
-        <input type="text"
-               placeholder="Summary"
-               value={summary}
-               onChange={(e) => setSummary(e.target.value)}
-                />
-        <input type="text"
-               placeholder="Description"
-               value={description}
-               onChange={(e) => setDescription(e.target.value)} 
-               />
-        <input type="datetime-local"
-               placeholder="Due Date" 
-               value={dueDate}
-               onChange={(e) => setDueDate(e.target.value)}
-               />
+        <input
+          className="input-link"
+          type="text"
+          placeholder="Summary"
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+        />
+        <input
+          className="input-link"
+          type="text"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <input
+          className="input-link"
+          type="datetime-local"
+          placeholder="Due Date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+        />
         <button
+          className="add-button"
+          type="button"
+          aria-label="Add task"
           onClick={() => {
             const newTask = {
               summary,
@@ -61,7 +83,9 @@ function TaskModal({ isOpen, onClose, onSave }) {
             setDueDate("");
             onClose();
             }}>
-          Add
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
         </button>
       </div>
 
