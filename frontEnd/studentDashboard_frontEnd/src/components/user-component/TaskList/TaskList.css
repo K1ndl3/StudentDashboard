@@ -2,10 +2,12 @@
     border: 2px solid rgba(100, 60, 255, 0.18);
     background-color: rgba(100, 60, 255, 0.04);
     height: 700px;
-    width: 35%;
+    width: 40%;
     margin-left: 10px;
     border-radius: 10px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff rgb(19, 17, 17);
 }
 
 .container .user-task {
@@ -41,6 +43,8 @@
     border: 1px solid rgba(100, 60, 255, 0.18);
     border-radius: 10px;
     margin-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff rgb(19, 17, 17);
 }
 
 .canvas-task-header {
@@ -55,6 +59,28 @@
     border: 1px solid rgba(100, 60, 255, 0.18);
     border-radius: 10px;
     min-height: 120px;
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff rgb(19, 17, 17);
+}
+
+.container::-webkit-scrollbar,
+.user-task::-webkit-scrollbar,
+.canvas-task::-webkit-scrollbar {
+    width: 10px;
+}
+
+.container::-webkit-scrollbar-track,
+.user-task::-webkit-scrollbar-track,
+.canvas-task::-webkit-scrollbar-track {
+    background: rgb(19, 17, 17);
+}
+
+.container::-webkit-scrollbar-thumb,
+.user-task::-webkit-scrollbar-thumb,
+.canvas-task::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border-radius: 999px;
+    border: 2px solid rgb(19, 17, 17);
 }
 
 .canvas-task-body {

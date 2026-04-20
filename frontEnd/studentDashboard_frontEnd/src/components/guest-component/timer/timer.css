@@ -13,6 +13,15 @@
     transition: height 220ms ease;
 }
 
+.timer-container.user-dashboard {
+    width: 36%;
+    height: 700px;
+    max-height: 700px;
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 .timer-header{ display:flex; align-items:center; justify-content:space-between; }
 .timer-header h2{ margin:0; color: rgb(100, 60, 255);
     font-size: 30px;
@@ -26,6 +35,35 @@
 .mode-label{ font-size:14px; color: rgba(230,230,255,0.9) }
 .time-display{ font-size:28px; font-weight:700; margin-top:6px }
 .cycle-count{ font-size:12px; margin-top:6px; color: rgba(230,230,255,0.7) }
+
+.timer-container.user-dashboard .timer-body {
+    flex: 1;
+    justify-content: center;
+    gap: 18px;
+}
+
+.timer-container.user-dashboard .progress-wrap {
+    width: 260px;
+    height: 260px;
+}
+
+.timer-container.user-dashboard .progress-circle {
+    width: 260px;
+    height: 260px;
+}
+
+.timer-container.user-dashboard .mode-label {
+    font-size: 18px;
+}
+
+.timer-container.user-dashboard .time-display {
+    font-size: 52px;
+    margin-top: 10px;
+}
+
+.timer-container.user-dashboard .cycle-count {
+    font-size: 15px;
+}
 
 .timer-actions{ display:flex; gap:10px }
 .start-button, .reset-button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600 }
@@ -47,3 +85,8 @@
 .settings-actions{ display:flex; gap:8px; justify-content:flex-end }
 .save-button{ background: rgb(100,60,255); color:white; border:none; padding:8px 12px; border-radius:8px }
 .cancel-button{ background: rgba(255,255,255,0.06); color:#eee; border:none; padding:8px 12px; border-radius:8px }
+
+.timer-container.user-dashboard .settings-panel {
+    margin-top: auto;
+    width: 100%;
+}

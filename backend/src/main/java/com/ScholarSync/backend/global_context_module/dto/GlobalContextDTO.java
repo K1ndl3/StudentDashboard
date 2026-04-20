@@ -15,10 +15,11 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({ "name", "canvasEvents", "userTasks" })
+@JsonPropertyOrder({ "name", "canvas_event", "user_task", "notepad" })
 public class GlobalContextDTO {
     private String name;
     private List<CanvasEvent> canvas_event;
     private List<UserTask> user_task;
+    private String notepad;
 
 }

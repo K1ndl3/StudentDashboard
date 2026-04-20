@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ScholarSync.backend.global_context_module.dto.GlobalContextDTO;
+import com.ScholarSync.backend.global_context_module.dto.UserNotepadRequest;
 import com.ScholarSync.backend.global_context_module.dto.UserTaskDeleteRequest;
 import com.ScholarSync.backend.global_context_module.dto.UserTaskRequest;
 import com.ScholarSync.backend.global_context_module.service.GlobalContextService;
@@ -46,6 +47,13 @@ public class GlobalContextController {
         String userEmail = authObject.getName();
         String response = globalContextService.deleteUserTask(userEmail, rq.getId());
         System.out.println("Deleted user task with id " + rq.getId() + " for user " + userEmail);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/save-notepad")
+    public ResponseEntity<String> saveUserNotepad(Authentication authObject, @RequestBody UserNotepadRequest rq) {
+        String userEmail = authObject.getName();
+        String response = globalContextService.saveUserNotepad(userEmail, rq.getNotepad());
         return ResponseEntity.ok(response);
     }
 }
