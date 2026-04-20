@@ -1,14 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./TaskList.css";
 import TaskModal from "./event-modal/task-modal/TaskModal";
 import Event from "../TaskList/event/Event";
 import CanvasModal from "./event-modal/canvas-modal/CanvasModal";
+import { useUser } from "../../context/UserContext/GlobalContext";
+
 function TaskList({ CanvasEvent = [], UserTasks = [] }) {
+  const { refreshData } = useUser();
   const [CanvasEvents, setCanvasEvents] = useState(CanvasEvent);
   const [userTask, setUserTask] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isCanvasModalOpen, setIsCanvasModalOpen] = useState(false);
+  const [canvasFilterEndDate, setCanvasFilterEndDate] = useState("");
+
+  const filteredCanvasEvents = useMemo(() => {
+    if (!canvasFilterEndDate) {
+      return CanvasEvents;
+    }
+    const parts = canvasFilterEndDate.split("-").map(Number);
+    if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) {
+      return CanvasEvents;
+    }
+    const [y, m, d] = parts;
+    const endMs = new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
+    const nowMs = Date.now();
+    return CanvasEvents.filter((ev) => {
+      if (ev.dueDate == null) return false;
+      const dueMs = new Date(ev.dueDate).getTime();
+      if (Number.isNaN(dueMs)) return false;
+      return dueMs >= nowMs && dueMs <= endMs;
+    });
+  }, [CanvasEvents, canvasFilterEndDate]);
 
   const handleAddTask = (newTask) => {
     const updatedTasks = [...userTask, newTask];
@@ -79,14 +102,8 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
   };
 
   useEffect(() => {
-    if (UserTasks && UserTasks.length > 0) {
-      setUserTask(UserTasks);
-      console.log("UserTasks set");
-    }
-    if (CanvasEvent && CanvasEvent.length > 0) {
-      setCanvasEvents(CanvasEvent);
-      console.log("CanvasEvents set");
-    }
+    setUserTask(UserTasks ?? []);
+    setCanvasEvents(CanvasEvent ?? []);
   }, [UserTasks, CanvasEvent]);
   
   return (
@@ -164,11 +181,9 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
         <div className="canvas-task">
           <CanvasModal
             isOpen={isCanvasModalOpen}
-            onClose={() => {
-              setIsCanvasModalOpen(false);
-              console.log("closing canvas modal");
-            }}
-          ></CanvasModal>
+            onClose={() => setIsCanvasModalOpen(false)}
+            onSyncComplete={refreshData}
+          />
           <div className="canvas-task-header">
             <h1 className="title">Canvas Events</h1>
             <button
@@ -192,7 +207,34 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
               </svg>
             </button>
           </div>
-          <div className="canvas-task-body">CPSC</div>
+          <div className="canvas-task-body">
+            <label className="canvas-filter-label">
+              <span>Show due by</span>
+              <input
+                type="date"
+                className="canvas-filter-date"
+                value={canvasFilterEndDate}
+                onChange={(e) => setCanvasFilterEndDate(e.target.value)}
+              />
+            </label>
+            {filteredCanvasEvents.length === 0 ? (
+              <p className="canvas-task-empty">
+                {canvasFilterEndDate
+                  ? "No Canvas events due in this range."
+                  : "No Canvas events yet. Add a calendar link above."}
+              </p>
+            ) : (
+              filteredCanvasEvents.map((ev) => (
+                <Event
+                  key={ev.id}
+                  id={ev.id}
+                  summary={ev.summary}
+                  description={ev.description}
+                  dueDate={ev.dueDate}
+                />
+              ))
+            )}
+          </div>
         </div>
       </div>
     </>

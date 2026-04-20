@@ -49,3 +49,46 @@
     justify-content: space-around;
     align-items: center;
 }
+
+.canvas-task {
+    overflow-y: auto;
+    border: 1px solid rgba(100, 60, 255, 0.18);
+    border-radius: 10px;
+    min-height: 120px;
+}
+
+.canvas-task-body {
+    padding: 8px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.canvas-filter-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.875rem;
+    color: #989ba1;
+}
+
+.canvas-filter-date {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(100, 60, 255, 0.28);
+    background: #16161b;
+    color: #e4e4e7;
+    outline: none;
+}
+
+.canvas-filter-date:focus {
+    border-color: rgba(100, 60, 255, 0.6);
+}
+
+.canvas-task-empty {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #71717a;
+    padding: 8px 0;
+}
