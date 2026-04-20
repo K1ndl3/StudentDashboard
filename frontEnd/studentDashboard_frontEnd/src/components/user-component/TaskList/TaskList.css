@@ -112,6 +112,12 @@
     border-color: rgba(100, 60, 255, 0.6);
 }
 
+.canvas-filter-date::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 1;
+    cursor: pointer;
+}
+
 .canvas-task-empty {
     margin: 0;
     font-size: 0.875rem;

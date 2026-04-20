@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     gap: 30px;
+    --calendar-accent: rgb(100, 60, 255);
 }
 
 
@@ -22,17 +23,23 @@
     justify-content: space-evenly;
 }
 
+.calendar-header h1 {
+    color: var(--calendar-accent);
+}
+
 .day-of-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
   font-weight: bold;
   margin-bottom: 5px;
+  color: var(--calendar-accent);
 }
 
 .day {
     list-style: none;
     padding: 0;
     margin: 0;
+    color: var(--calendar-accent);
 }
 
 .dates {

@@ -9,5 +9,11 @@
 }
 
 .day-number {
+    font-size: 18px;
     margin-left: 4px;
+    color: rgb(100, 60, 255);
+}
+
+.days .size-6 {
+    color: rgb(100, 60, 255);
 }
