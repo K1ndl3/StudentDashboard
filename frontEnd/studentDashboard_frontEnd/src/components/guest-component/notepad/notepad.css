@@ -19,6 +19,17 @@
     margin: 0;
 }
 
+.notepad-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.notepad-actions .add-sync-event-button {
+    width: 70px;
+    height: 70px;
+    border-radius: 100px;
+}
+
 .notepad-container.user-dashboard {
     width: 24%;
     height: 700px;
