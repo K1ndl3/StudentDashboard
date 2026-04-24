@@ -118,7 +118,7 @@ function DatePopup({isoDate, onClose}) {
                                         {(editId && editId === evnt.id) ? <button className="close-edit-button"
                                                             onClick={() => setEditId(null)}>close</button> :
                                                     <button className="delete-button"
-                                                            onClick={() => handleDelete(evnt.id)}>delete</button>}
+                                                            onClick={() => handleDelete(evnt.id)}>X</button>}
                                         {(editId && editId === evnt.id) ? 
                                             <button className="save-edit-button"
                                                     onClick={() => handleEdit(evnt.id)}>save</button> : 

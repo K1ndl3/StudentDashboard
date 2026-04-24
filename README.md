@@ -15,6 +15,44 @@ This app centralizes academic data (courses, assignments, grades, calendar event
 
 ---
 
+## Getting started
+
+### What you need
+
+| Tool | Purpose |
+|------|---------|
+| [Node.js](https://nodejs.org/) (LTS) and **npm** | Install and run the React frontend |
+| **Java 21** | Compile and run the Spring Boot backend |
+| **Maven** (optional) | The backend includes the Maven Wrapper (`./mvnw`), so you can build without a global Maven install |
+| **PostgreSQL** | Database used by the backend for app data |
+
+### After cloning
+
+1. **PostgreSQL** — Create a database named `ScholarSync` (or change the URL in `backend/src/main/resources/application.properties`). Update `spring.datasource.username` and `spring.datasource.password` so they match your local Postgres user.
+
+2. **Backend** — From the repo root:
+
+   ```bash
+   cd backend
+   ./mvnw spring-boot:run
+   ```
+
+   On Windows, use `mvnw.cmd spring-boot:run` instead. By default the API listens on **http://localhost:8080**.
+
+3. **Frontend** — In a second terminal, from the repo root:
+
+   ```bash
+   cd frontEnd/studentDashboard_frontEnd
+   npm install
+   npm run dev
+   ```
+
+   Open the URL shown in the terminal (Vite usually serves at **http://localhost:5173**).
+
+Run the backend and frontend together for login, tasks, calendar, and API features that talk to the server.
+
+---
+
 ## Features
 
 - Fetch Canvas courses
