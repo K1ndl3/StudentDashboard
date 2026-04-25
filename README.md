@@ -1,17 +1,17 @@
 # Study Productivity App
 
-A full-stack study productivity application integrating Canvas LMS data with a custom task and calendar management system.
+A full-stack study productivity application for managing study tasks, notes, timers, calendar planning, and Canvas calendar events.
 
 ---
 
 ## Overview
 
-This app centralizes academic data (courses, assignments, grades, calendar events) and combines it with a custom event tracker to reduce cognitive overhead and make deadlines impossible to ignore.
+This app centralizes study planning tools with saved user tasks, notepad content, calendar views, and Canvas calendar events imported from a calendar link.
 
 **Frontend:** React  
 **Backend:** Spring Boot (Spring Web, Spring Data JPA)  
 **Database:** PostgreSQL  
-**Authentication:** Token-based (Canvas API + custom auth context)
+**Authentication:** JWT-based app login with React auth context
 
 ---
 
@@ -55,11 +55,12 @@ Run the backend and frontend together for login, tasks, calendar, and API featur
 
 ## Features
 
-- Fetch Canvas courses
-- Retrieve assignments with due dates
-- Display grades
-- View Canvas calendar events
-- Create, edit, and delete custom events
+- Register and log in with JWT authentication
+- Sync Canvas calendar events from a Canvas calendar `.ics` link
+- Create and delete custom user tasks
+- Save notepad content for registered users
+- Use guest dashboard tools without logging in
+- View a standalone calendar page
 - Protected routes using authentication context
 - RESTful backend architecture
 - PostgreSQL persistence for custom data
@@ -73,34 +74,43 @@ Run the backend and frontend together for login, tasks, calendar, and API featur
 - React Router for routing
 - Context API for authentication state
 - Component-based dashboard structure
-- Dev token sent via request headers
-- Axios/Fetch for backend communication
+- JWT token stored by the auth context and sent in request headers
+- Fetch API for backend communication
 
 ### Backend (Spring Boot)
 
-- Layered architecture: **Controller → Service → Client**
+- Layered architecture: **Controller → Service → Repository/Client**
 - DTOs for response shaping
 - REST endpoints returning JSON
-- Canvas API integration
-- Spring Data JPA for persistence
+- Canvas calendar `.ics` link parsing and sync
+- Spring Data JPA for user, task, notepad, and Canvas event persistence
 
 ---
 
 ## Key Endpoints
 
-| Endpoint        | Method | Description                              |
-|---------------|--------|------------------------------------------|
-| `/courses`     | GET    | Returns list of Canvas courses           |
-| `/assignments` | GET    | Returns assignments with due dates       |
-| `/grades`      | GET    | Returns course grades                    |
-| `/calendar`    | GET    | Returns Canvas calendar events           |
-| `/events`      | CRUD   | Manage custom user-created events        |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/auth/register` | POST | Creates a user account and returns a JWT token |
+| `/auth/login` | POST | Authenticates a user and returns a JWT token |
+| `/api/context/load` | GET | Loads the signed-in user's display name, Canvas events, saved tasks, and notepad |
+| `/api/context/save-user-tasks` | POST | Saves one or more user-created tasks for the signed-in user |
+| `/api/context/delete-user-task` | DELETE | Deletes a user-created task by ID for the signed-in user |
+| `/api/context/save-notepad` | POST | Saves the signed-in user's notepad content |
+| `/api/canvas-events/sync` | POST | Accepts a Canvas calendar `.ics` URL, parses the events, stores them, and returns the synced events |
+| `/api/canvas-events/test` | GET | Simple backend health/test endpoint |
+
+Authenticated routes expect a header in this format:
+
+```text
+Authorization: Bearer <jwt-token>
+```
 
 ---
 
 ## Security Notes
 
-- Dev token sent via request headers (not request body)
+- JWT sent through the `Authorization` request header
 - Frontend route protection implemented
 - DTO separation prevents overexposing data
 
@@ -108,7 +118,7 @@ Run the backend and frontend together for login, tasks, calendar, and API featur
 
 ## Future Improvements
 
-- Full OAuth flow (replace dev token)
+- Full OAuth flow or improved external calendar authorization
 - Role-based access control
 - UI performance optimization
 - Production deployment with HTTPS
@@ -122,6 +132,6 @@ Run the backend and frontend together for login, tasks, calendar, and API featur
 
 Designed to simplify academic workload visibility and build full-stack engineering skills through real-world API integration and layered backend architecture.
 
-![Guest User Log-in](./README_asset/[Scholar_sync2].png)
-![Guest User Focus-page](./README_asset/[Scholar_sync1].png)
-![Guest User Calendar](./README_asset/ScholarSync3.png)
+![Login screen](./README_asset/login.png)
+![Focus tasks page](./README_asset/focus-tasks.png)
+![Calendar page](./README_asset/calendar.png)
