@@ -1,4 +1,4 @@
-## Class Diagram
+# Class Diagram
 
 ![Class Diagram](ScholarSyncClassDiagram.png)
 
