@@ -69,6 +69,8 @@ Run the backend and frontend together for login, tasks, calendar, and API featur
 
 ## Architecture
 
+For a more detailed map of the repository folders and major files, see [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
+
 ### Frontend (React)
 
 - React Router for routing
