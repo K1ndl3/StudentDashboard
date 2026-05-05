@@ -19,7 +19,7 @@ function CanvasModal({ isOpen, onClose, onSyncComplete }) {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        "http://localhost:8080/api/canvas-events/sync",
+        "http://localhost:8080/api/canvas-events/syncAndOverride",
         {
           method: "POST",
           headers: {

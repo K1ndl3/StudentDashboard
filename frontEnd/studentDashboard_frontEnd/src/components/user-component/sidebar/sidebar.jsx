@@ -13,6 +13,7 @@ function Sidebar() {
                 </svg>
             Focus
             </button>
+            
         </div>
     </>)
 }

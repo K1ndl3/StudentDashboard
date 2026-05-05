@@ -3,6 +3,7 @@ package com.ScholarSync.backend.parser_module.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -10,19 +11,22 @@ import org.springframework.web.client.RestClient;
 import com.ScholarSync.backend.model_module.event.canvas_event.CanvasEvent;
 import com.ScholarSync.backend.model_module.event.canvas_event.CanvasEventRepository;
 import com.ScholarSync.backend.model_module.user.User;
+import com.ScholarSync.backend.model_module.user.UserDetailRepo;
 import com.ScholarSync.backend.parser_module.parser_client.Parser;
 
 import jakarta.transaction.Transactional;
 
 @Service
-public class ParserServiceImpl implements ParserService{
+public class ParserServiceImpl implements ParserService {
     private final CanvasEventRepository canvasEventRepository;
     private final Parser icsParser;
     private final RestClient client = RestClient.create();
+    private final UserDetailRepo userDetailRepository;
 
-    public ParserServiceImpl(Parser parser, CanvasEventRepository canvasEventRepository) {
+    public ParserServiceImpl(Parser parser, CanvasEventRepository canvasEventRepository, UserDetailRepo userDetailRepo) {
         this.icsParser = parser;
         this.canvasEventRepository = canvasEventRepository;
+        this.userDetailRepository = userDetailRepo;
     }
 
     public List<CanvasEvent> fetchAndParse(String calendarURL) {
@@ -31,12 +35,12 @@ public class ParserServiceImpl implements ParserService{
                 .uri(calendarURL)
                 .retrieve()
                 .body(InputStream.class);
-            
-                if (input != null) {
-                    return icsParser.parseIcs(input);
-                }
+
+            if (input != null) {
+                return icsParser.parseIcs(input);
+            }
         } catch (org.springframework.web.client.ResourceAccessException e) {
-        // Triggers if the URL is wrong or internet is down
+            // Triggers if the URL is wrong or internet is down
             System.err.println("Network error: Could not reach Canvas. " + e.getMessage());
         } catch (org.springframework.web.client.HttpClientErrorException e) {
             // Triggers for 404 (Not Found) or 401 (Unauthorized)
@@ -52,13 +56,29 @@ public class ParserServiceImpl implements ParserService{
     @Transactional
     public List<CanvasEvent> syncAndFetchCanvasEvents(String url, User user) {
         List<CanvasEvent> list = fetchAndParse(url);
-        if (list.isEmpty()) return new ArrayList<>();
+        if (list.isEmpty()) {
+            return new ArrayList<>();
+        }
         for (CanvasEvent event : list) {
             event.setUser(user);
         }
         return canvasEventRepository.saveAll(list);
     }
 
-    
+    @Transactional
+    public List<CanvasEvent> overideEvents(String calendarURL, User user) {
+        User persistedUser = userDetailRepository.findById(user.getId())
+            .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
 
+        String existingCalendarURL = persistedUser.getCalendarLink();
+        if (Objects.equals(existingCalendarURL, calendarURL)) {
+            // Same link: no override work needed.
+            return new ArrayList<>();
+        }
+
+        persistedUser.setCalendarLink(calendarURL);
+        userDetailRepository.save(persistedUser);
+
+        return syncAndFetchCanvasEvents(calendarURL, persistedUser);
+    }
 }

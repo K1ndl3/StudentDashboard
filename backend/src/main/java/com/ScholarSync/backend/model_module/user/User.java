@@ -66,6 +66,8 @@ public class User implements UserDetails {
     public List<UserTask> getUserTasks() {
         return this.userTask;
     }
+
+
     // create a general events class for non canvas events
 
     // spring security implementations

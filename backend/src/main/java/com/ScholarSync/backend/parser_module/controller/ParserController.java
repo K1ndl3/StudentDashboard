@@ -43,6 +43,23 @@ public ResponseEntity<List<CanvasEvent>> syncEvents(
     return ResponseEntity.ok(eventList);
 }
 
+    @PostMapping("/syncAndOverride")
+public ResponseEntity<List<CanvasEvent>> syncAndOverride(
+        @AuthenticationPrincipal User user,
+        @RequestBody CalendarLinkRequest rq) {
+
+    String url = rq.getUrl();
+    if (url == null || url.trim().isEmpty()) {
+        return ResponseEntity.badRequest().build();
+    }
+    List<CanvasEvent> eventList = parserService.overideEvents(url, user);
+
+    if (eventList.isEmpty()) {
+        return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(eventList);
+}
+
     @GetMapping("test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("test");
