@@ -1,0 +1,7 @@
+todo:
+  1) rotate the jwt key and hide it in enviromental variable for deployment later.
+  2) calendar feature needs to be implemented in the logged in user
+  3) fix css in the calendar
+  4) implement forget password
+  5) enforce character rules in registration, especially for email
+  6) fix duplicate Canvas Events due to mutliple link parsing
