@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUser } from "../../context/UserContext/GlobalContext";
 import "./notepad.css"
 
@@ -10,6 +9,27 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
     );
     const [isSaving, setIsSaving] = useState(false);
     const [isGetting, setIsGetting] = useState(false);
+    const textareaRef = useRef(null);
+
+    const handleKeyDown = (e) => {
+        if (e.key !== "Tab") return;
+
+        e.preventDefault();
+        const textarea = e.target;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const indent = "    ";
+        const newValue = note.slice(0, start) + indent + note.slice(end);
+        const newCursor = start + indent.length;
+
+        setNotes(newValue);
+        requestAnimationFrame(() => {
+            if (textareaRef.current) {
+                textareaRef.current.selectionStart = newCursor;
+                textareaRef.current.selectionEnd = newCursor;
+            }
+        });
+    };
 
     useEffect(() => {
         if (!isUserDashboard) return;
@@ -141,10 +161,14 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
                 )}
             </div>
             )}
-            <textarea placeholder="Enter any notes"
-                      onChange={(e) => setNotes(e.target.value)}
-                      value={note}
-                      maxLength={1000}></textarea>
+            <textarea
+                ref={textareaRef}
+                placeholder="Enter any notes"
+                onChange={(e) => setNotes(e.target.value)}
+                onKeyDown={handleKeyDown}
+                value={note}
+                maxLength={1000}
+            />
             {isUserDashboard && <p className="note-character-count">{note.length}/1000</p>}
         </div>
     )
