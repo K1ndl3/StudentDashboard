@@ -1,51 +1,77 @@
 .calendar-page {
     display: flex;
     flex-direction: row;
-    gap: 30px;
-    --calendar-accent: rgb(100, 60, 255);
+    gap: 0;
+    height: 100%;
+    --calendar-accent: var(--obs-text-secondary, #999);
 }
 
 
 .calendar-component-container {
-
-    border: 1px solid rgba(100, 60, 255, 0.18);
-    height: 76vh;
-    width: 55vw;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    border-radius: 20px;
-    background-color: rgba(100, 60, 255, 0.04);
+    border-radius: var(--obs-radius-lg, 8px);
+    background: var(--obs-bg-surface, #262626);
+    border: 1px solid var(--obs-border-subtle, #2f2f2f);
+    box-shadow: var(--obs-shadow, 0 1px 3px rgba(0, 0, 0, 0.4));
+    overflow: hidden;
 }
 
 .calendar-header {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    padding: 12px 16px;
+    background: var(--obs-bg-raised, #2f2f2f);
+    border-bottom: 1px solid var(--obs-border-subtle, #2f2f2f);
 }
 
 .calendar-header h1 {
-    color: var(--calendar-accent);
+    color: var(--obs-text-primary, #dcddde);
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.calendar-header button {
+    background: var(--obs-bg-surface, #262626);
+    border: 1px solid var(--obs-border, #3a3a3a);
+    color: var(--obs-text-secondary, #999);
+    border-radius: var(--obs-radius, 6px);
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.calendar-header button:hover {
+    background: var(--obs-bg-hover, #363636);
+    color: var(--obs-text-primary, #dcddde);
 }
 
 .day-of-week {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
-  font-weight: bold;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: 500;
   margin-bottom: 5px;
-  color: var(--calendar-accent);
+  padding: 0 14px;
+  color: var(--obs-text-muted, #666);
+  font-size: 12px;
 }
 
 .day {
     list-style: none;
     padding: 0;
     margin: 0;
-    color: var(--calendar-accent);
+    color: var(--obs-text-secondary, #999);
 }
 
 .dates {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
-  gap: 5px; /* spacing between cells */
-  margin-left: 14px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 0 14px 14px;
   list-style-type: none;
+  flex: 1;
 }

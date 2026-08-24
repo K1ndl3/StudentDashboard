@@ -3,9 +3,11 @@
   display: flex;
   flex-direction: column;
   justify-content: start;
-  height: 98vh;
-  width: 99vw;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
   color: white;
+  box-sizing: border-box;
 }
 
 .refresh-button {
@@ -15,6 +17,10 @@
 .content-container {
     display: flex;
     flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
     gap: 10px;
 }
 

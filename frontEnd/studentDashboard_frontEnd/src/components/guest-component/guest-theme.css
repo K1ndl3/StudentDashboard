@@ -1,0 +1,105 @@
+/* Obsidian-inspired design tokens for guest pages */
+.guest-page {
+  --obs-bg-base: #1a1a1a;
+  --obs-bg-surface: #262626;
+  --obs-bg-raised: #2f2f2f;
+  --obs-bg-hover: #363636;
+  --obs-bg-input: #1e1e1e;
+  --obs-border: #3a3a3a;
+  --obs-border-subtle: #2f2f2f;
+  --obs-text-primary: #dcddde;
+  --obs-text-secondary: #999;
+  --obs-text-muted: #666;
+  --obs-accent: #7a7a7a;
+  --obs-accent-hover: #909090;
+  --obs-radius: 6px;
+  --obs-radius-lg: 8px;
+  --obs-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --obs-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.guest-page {
+  background: var(--obs-bg-base);
+  color: var(--obs-text-primary);
+  font-family: var(--obs-font);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.guest-page .header {
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--obs-border-subtle, #2f2f2f);
+  background: var(--obs-bg-surface, #262626);
+}
+
+.guest-page .logo {
+  color: var(--obs-text-primary, #dcddde);
+  font-weight: 600;
+}
+
+.guest-page .guest-user {
+  color: var(--obs-text-secondary, #999);
+}
+
+.guest-page .sign-out-menu {
+  background: var(--obs-bg-raised, #2f2f2f);
+  border: 1px solid var(--obs-border, #3a3a3a);
+  border-radius: var(--obs-radius, 6px);
+}
+
+.guest-page .sign-out-button {
+  color: var(--obs-text-primary, #dcddde);
+  background: transparent;
+  border: none;
+}
+
+.guest-page .sign-out-button:hover {
+  background: var(--obs-bg-hover, #363636);
+}
+
+.guest-page .sidebar-container {
+  width: 88px;
+  flex-shrink: 0;
+  height: 100%;
+  padding: 12px 8px;
+  margin-left: 0;
+  border-right: 1px solid var(--obs-border-subtle, #2f2f2f);
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.guest-page .sidebar-container button {
+  background: var(--obs-bg-surface, #262626);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  color: var(--obs-text-secondary, #999);
+  border-radius: var(--obs-radius, 6px);
+  box-shadow: none;
+}
+
+.guest-page .sidebar-container button:hover {
+  background: var(--obs-bg-hover, #363636);
+  border-color: var(--obs-border, #3a3a3a);
+  color: var(--obs-text-primary, #dcddde);
+  box-shadow: none;
+}
+
+.guest-page .sidebar-container button:active {
+  background: var(--obs-bg-raised, #2f2f2f);
+  transform: none;
+}
+
+.guest-main {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  gap: 0;
+}

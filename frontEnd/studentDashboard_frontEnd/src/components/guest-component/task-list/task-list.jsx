@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import "./task-list.css"
 
-function TaskList() {
+function TaskList({ hideHeader = false }) {
     const [list, setList] = useState(() => {
         try {
             const raw = localStorage.getItem("taskList")
@@ -36,7 +36,7 @@ function TaskList() {
 
     return (
         <div className="tasklist-container">
-            <h1>Task List</h1>
+            {!hideHeader && <h1>Task List</h1>}
 
             <div className="task-input-row">
                 <input

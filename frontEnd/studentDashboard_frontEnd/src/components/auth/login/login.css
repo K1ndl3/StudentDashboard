@@ -1,179 +1,201 @@
+.login-container {
+  --obs-bg-surface: #262626;
+  --obs-bg-raised: #2f2f2f;
+  --obs-bg-hover: #363636;
+  --obs-bg-input: #1e1e1e;
+  --obs-border: #3a3a3a;
+  --obs-border-subtle: #2f2f2f;
+  --obs-text-primary: #dcddde;
+  --obs-text-secondary: #999;
+  --obs-text-muted: #666;
+  --obs-accent: #7a7a7a;
+  --obs-accent-hover: #909090;
 
-.login-container{
-    margin-top: 50px;
-    border-radius: 16px;
-    width: 30vw;
-    height: 70vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    background-color: #252525;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    padding: 40px;
+  margin-top: 50px;
+  border-radius: 16px;
+  width: 30vw;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: var(--obs-bg-surface);
+  border: 1px solid var(--obs-border-subtle);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  padding: 40px;
 }
 
 .text {
-    display: flex;
-    flex-direction: column;
-    height: 20vh;
-    width: 100%;
-    justify-content: flex-start;
-    align-items: center;
-    color: white;
-    text-align: center;
-    padding-top: 0px;
+  display: flex;
+  flex-direction: column;
+  height: 20vh;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--obs-text-primary);
+  text-align: center;
+  padding-top: 0px;
 }
 
 .text h3 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgb(63, 41, 186);
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--obs-text-secondary);
 }
 
 .text h1 {
-    margin: 8px 0 0 0;
-    font-size: 32px;
-    font-weight: 700;
-    color: white;
+  margin: 8px 0 0 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--obs-text-primary);
 }
 
 .button-bar {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 16vh;
-    width: 80%;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 16vh;
+  width: 80%;
+  gap: 16px;
 }
 
 .input {
-    background-color: #1a1a1a;
-    border: 1px solid #404040;
-    border-radius: 8px;
-    height: 50px;
-    min-height: 50px;
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-    padding: 0 16px;
-    color: white;
-    font-size: 14px;
-    line-height: 50px;
-    transition: all 0.3s ease;
+  background-color: var(--obs-bg-input);
+  border: 1px solid var(--obs-border);
+  border-radius: 8px;
+  height: 50px;
+  min-height: 50px;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  padding: 0 16px;
+  color: var(--obs-text-primary);
+  font-size: 14px;
+  line-height: 50px;
+  transition: all 0.3s ease;
 }
 
 .input:focus {
-    outline: none;
-    border-color: rgb(63, 41, 186);
-    box-shadow: 0 0 0 3px rgba(63, 41, 186, 0.1);
+  outline: none;
+  border-color: var(--obs-accent);
+  box-shadow: 0 0 0 3px rgba(122, 122, 122, 0.15);
 }
 
 .input::placeholder {
-    color: #808080;
+  color: var(--obs-text-muted);
 }
 
 .login-button {
-    background-color: rgb(63, 41, 186);
-    border: none;
-    border-radius: 8px;
-    height: 50px;
-    width: 100%;
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: var(--obs-bg-raised);
+  border: 1px solid var(--obs-border);
+  border-radius: 8px;
+  height: 50px;
+  width: 100%;
+  color: var(--obs-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .login-button:hover {
-    background-color: rgb(79, 57, 206);
-    box-shadow: 0 8px 24px rgba(63, 41, 186, 0.3);
-    transform: translateY(-2px);
+  background-color: var(--obs-bg-hover);
+  border-color: var(--obs-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
 }
 
 .login-button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .test-button {
-    background-color: rgb(63, 41, 186);
-    border: none;
-    border-radius: 8px;
-    height: 50px;
-    width: 100%;
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: var(--obs-bg-raised);
+  border: 1px solid var(--obs-border);
+  border-radius: 8px;
+  height: 50px;
+  width: 100%;
+  color: var(--obs-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .test-button:hover {
-    background-color: rgb(79, 57, 206);
-    box-shadow: 0 8px 24px rgba(63, 41, 186, 0.3);
-    transform: translateY(-2px);
+  background-color: var(--obs-bg-hover);
+  border-color: var(--obs-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
 }
 
 .test-button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .scholar-hat {
-    width: 1100px;
-    height: 1100px;
-    padding-top: 20px;
-    margin-top: 20px;
-    transform: scale(2.5);
+  width: 1100px;
+  height: 1100px;
+  padding-top: 20px;
+  margin-top: 20px;
+  transform: scale(2.5);
+  color: var(--obs-accent);
+}
+
+.scholar-hat path {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 .button-span {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
 
 .button-span .register-button {
-    color: white;
-    background-color: rgb(63, 41, 186);
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  color: var(--obs-text-primary);
+  background-color: var(--obs-bg-raised);
+  border: 1px solid var(--obs-border);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .register-button:hover {
-    background-color: rgb(79, 57, 206);
-    box-shadow: 0 8px 24px rgba(63, 41, 186, 0.3);
-    transform: translateY(-2px);
+  background-color: var(--obs-bg-hover);
+  border-color: var(--obs-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
 }
 
 .register-button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .button-span .forgot-password-button {
-    color: white;
-    background-color: rgb(63, 41, 186);
-    border: none;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  color: var(--obs-text-primary);
+  background-color: var(--obs-bg-raised);
+  border: 1px solid var(--obs-border);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .forgot-password-button:hover {
-    background-color: rgb(79, 57, 206);
-    box-shadow: 0 8px 24px rgba(63, 41, 186, 0.3);
-    transform: translateY(-2px);
+  background-color: var(--obs-bg-hover);
+  border-color: var(--obs-accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
 }
 
 .forgot-password-button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }

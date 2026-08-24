@@ -1,20 +1,27 @@
 
 
 .days {
-    margin-top: 20px;
-    border: 3px solid rgb(63, 41, 186);
-    border-radius: 10px;
+    margin-top: 0;
+    border: 1px solid var(--obs-border-subtle, #2f2f2f);
+    border-radius: var(--obs-radius, 6px);
     height: 50px;
-    width: 95px;
-    background-color: rgba(100, 60, 255, 0.06);
+    width: 100%;
+    background-color: var(--obs-bg-input, #1e1e1e);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.days:hover {
+    background-color: var(--obs-bg-hover, #363636);
+    border-color: var(--obs-border, #3a3a3a);
 }
 
 .day-number {
-    font-size: 18px;
-    margin-left: 4px;
-    color: rgb(100, 60, 255);
+    font-size: 14px;
+    margin-left: 6px;
+    color: var(--obs-text-primary, #dcddde);
 }
 
 .days .size-6 {
-    color: rgb(100, 60, 255);
+    color: var(--obs-text-muted, #666);
 }

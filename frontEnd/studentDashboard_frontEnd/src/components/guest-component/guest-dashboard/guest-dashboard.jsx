@@ -1,27 +1,18 @@
-import Timer from "../timer/timer";
 import "./guest-dashboard.css";
+import "../guest-theme.css";
 import Sidebar from "../../sidebar/sidebar";
-import Notepad from "../notepad/notepad";
-import TaskList from "../task-list/task-list";
 import Header from "../../header/header";
+import GuestWorkspace from "./GuestWorkspace";
 
 function GuestDashboard() {
   return (
-    <>
-      <div className="guest-dashboard-container">
-        <Header />
-        <main>
-          <Sidebar />
-          <div className="components">
-            <TaskList />
-            <div className="right-side-component">
-              <Timer />
-              <Notepad />
-            </div>
-          </div>
-        </main>
-      </div>
-    </>
+    <div className="guest-page guest-dashboard-container">
+      <Header />
+      <main className="guest-main">
+        <Sidebar />
+        <GuestWorkspace />
+      </main>
+    </div>
   );
 }
 

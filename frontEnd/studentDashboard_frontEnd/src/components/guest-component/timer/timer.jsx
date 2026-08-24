@@ -10,7 +10,8 @@ function formatTime(sec) {
     return `${m}:${s}`
 }
 
-function Timer({ isUserDashboard = false }) {
+function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
+    const ringColor = accentColor || THEME;
     const [workMin, setWorkMin] = useState(() => Number(localStorage.getItem("pom_work")) || 25)
     const [breakMin, setBreakMin] = useState(() => Number(localStorage.getItem("pom_break")) || 5)
     const [mode, setMode] = useState("work")
@@ -139,8 +140,8 @@ function Timer({ isUserDashboard = false }) {
 
     return (
         <div className={`timer-container ${showSettings ? 'expanded' : ''} ${isUserDashboard ? 'user-dashboard' : ''}`}>
-            <div className="timer-header">
-                <h2>Timer</h2>
+            <div className={`timer-header ${hideHeader ? 'timer-header-compact' : ''}`}>
+                {!hideHeader && <h2>Timer</h2>}
                 {!isUserDashboard && (
                     <div className="timer-controls">
                         <button className="icon-button" title="Settings" onClick={() => setShowSettings(s => !s)}>
@@ -158,7 +159,7 @@ function Timer({ isUserDashboard = false }) {
                 <div className="progress-wrap">
                     <svg className="progress-circle" width="180" height="180" viewBox="0 0 180 180">
                         <circle cx="90" cy="90" r="70" stroke="rgba(255,255,255,0.08)" strokeWidth="12" fill="none" />
-                        <circle cx="90" cy="90" r="70" stroke={THEME} strokeWidth="12" fill="none"
+                        <circle cx="90" cy="90" r="70" stroke={ringColor} strokeWidth="12" fill="none"
                             strokeDasharray={`${circumference} ${circumference}`}
                             strokeDashoffset={circumference - dash}
                             strokeLinecap="round"

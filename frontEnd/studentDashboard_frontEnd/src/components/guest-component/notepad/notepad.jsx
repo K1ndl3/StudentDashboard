@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useUser } from "../../context/UserContext/GlobalContext";
 import "./notepad.css"
 
-function Notepad({ isUserDashboard = false }) {
+function Notepad({ isUserDashboard = false, hideHeader = false }) {
     const { userData, refreshData } = useUser();
     const [note, setNotes] = useState(() =>
         isUserDashboard ? "" : localStorage.getItem("userNote") || ""
@@ -81,8 +81,9 @@ function Notepad({ isUserDashboard = false }) {
 
     return (
         <div className={`notepad-container ${isUserDashboard ? "user-dashboard" : ""}`}>
+            {(!hideHeader || isUserDashboard) && (
             <div className="notepad-header">
-                <h1>Notepad</h1>
+                {!hideHeader && <h1>Notepad</h1>}
                 {isUserDashboard && (
                     <div className="notepad-actions">
                         <button
@@ -139,6 +140,7 @@ function Notepad({ isUserDashboard = false }) {
                     </div>
                 )}
             </div>
+            )}
             <textarea placeholder="Enter any notes"
                       onChange={(e) => setNotes(e.target.value)}
                       value={note}

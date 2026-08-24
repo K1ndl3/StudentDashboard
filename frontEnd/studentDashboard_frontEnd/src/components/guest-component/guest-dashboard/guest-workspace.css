@@ -1,0 +1,288 @@
+.guest-workspace {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  padding: 8px 12px 12px;
+  gap: 0;
+  box-sizing: border-box;
+}
+
+.guest-workspace.is-resizing,
+.guest-workspace.is-resizing * {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.guest-panel-wrapper {
+  display: contents;
+}
+
+.guest-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-shrink: 0;
+  background: var(--obs-bg-surface, #262626);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  border-radius: var(--obs-radius-lg, 8px);
+  box-shadow: var(--obs-shadow, 0 1px 3px rgba(0, 0, 0, 0.4));
+  overflow: hidden;
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.guest-panel.is-dragging {
+  opacity: 0.55;
+}
+
+.guest-panel.is-drag-over {
+  border-color: var(--obs-accent, #7a7a7a);
+}
+
+.guest-panel-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--obs-bg-raised, #2f2f2f);
+  border-bottom: 1px solid var(--obs-border-subtle, #2f2f2f);
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.guest-panel-tab:active {
+  cursor: grabbing;
+}
+
+.guest-panel-tab-grip {
+  color: var(--obs-text-muted, #666);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.guest-panel-tab-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--obs-text-secondary, #999);
+  letter-spacing: 0.02em;
+}
+
+.guest-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.guest-resize-handle {
+  width: 6px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  cursor: col-resize;
+  padding: 0;
+  margin: 0 2px;
+  position: relative;
+  align-self: stretch;
+}
+
+.guest-resize-handle::before {
+  content: "";
+  position: absolute;
+  inset: 8px 0;
+  border-radius: 99px;
+  background: var(--obs-border-subtle, #2f2f2f);
+  transition: background 0.15s ease;
+}
+
+.guest-resize-handle:hover::before {
+  background: var(--obs-accent, #7a7a7a);
+}
+
+/* Override child component styles inside guest workspace */
+.guest-workspace .tasklist-container,
+.guest-workspace .timer-container,
+.guest-workspace .notepad-container {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.guest-workspace .tasklist-container h1,
+.guest-workspace .timer-header h2,
+.guest-workspace .notepad-header h1 {
+  display: none;
+}
+
+.guest-workspace .timer-header h2 {
+  display: none;
+}
+
+.guest-workspace .timer-header-compact {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 4px 4px;
+  min-height: 0;
+}
+
+.guest-workspace .timer-header-compact .timer-controls {
+  margin-left: auto;
+}
+
+.guest-workspace .notepad-header {
+  margin: 0 0 8px;
+}
+
+.guest-workspace .notepad-header:not(:has(.notepad-actions *)) {
+  display: none;
+}
+
+.guest-workspace h1,
+.guest-workspace h2 {
+  color: var(--obs-text-primary, #dcddde);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.guest-workspace .task-input,
+.guest-workspace .edit-input {
+  background: var(--obs-bg-input, #1e1e1e);
+  border: 1px solid var(--obs-border, #3a3a3a);
+  color: var(--obs-text-primary, #dcddde);
+  border-radius: var(--obs-radius, 6px);
+}
+
+.guest-workspace .task-input:focus,
+.guest-workspace .edit-input:focus {
+  outline: none;
+  border-color: var(--obs-accent, #7a7a7a);
+}
+
+.guest-workspace .add-button,
+.guest-workspace .edit-button,
+.guest-workspace .save-button,
+.guest-workspace .start-button {
+  background: var(--obs-bg-raised, #2f2f2f);
+  color: var(--obs-text-primary, #dcddde);
+  border: 1px solid var(--obs-border, #3a3a3a);
+  border-radius: var(--obs-radius, 6px);
+}
+
+.guest-workspace .add-button:hover,
+.guest-workspace .edit-button:hover,
+.guest-workspace .save-button:hover,
+.guest-workspace .start-button:hover {
+  background: var(--obs-bg-hover, #363636);
+  border-color: var(--obs-accent, #7a7a7a);
+}
+
+.guest-workspace .delete-button,
+.guest-workspace .cancel-button,
+.guest-workspace .reset-button {
+  background: transparent;
+  color: var(--obs-text-secondary, #999);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  border-radius: var(--obs-radius, 6px);
+}
+
+.guest-workspace .delete-button:hover,
+.guest-workspace .cancel-button:hover,
+.guest-workspace .reset-button:hover {
+  background: var(--obs-bg-hover, #363636);
+  color: var(--obs-text-primary, #dcddde);
+}
+
+.guest-workspace .task-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.guest-workspace .task-item {
+  background: var(--obs-bg-input, #1e1e1e);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  border-radius: var(--obs-radius, 6px);
+}
+
+.guest-workspace .task-item.completed .task-text {
+  color: var(--obs-text-muted, #666);
+  text-decoration-color: var(--obs-text-muted, #666);
+}
+
+.guest-workspace .timer-body {
+  flex: 1;
+  justify-content: center;
+}
+
+.guest-workspace .timer-container.expanded {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.guest-workspace .mode-label {
+  color: var(--obs-text-secondary, #999);
+}
+
+.guest-workspace .time-display {
+  color: var(--obs-text-primary, #dcddde);
+}
+
+.guest-workspace .cycle-count {
+  color: var(--obs-text-muted, #666);
+}
+
+.guest-workspace .settings-panel {
+  background: var(--obs-bg-input, #1e1e1e);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  border-radius: var(--obs-radius, 6px);
+}
+
+.guest-workspace .settings-row label {
+  color: var(--obs-text-secondary, #999);
+}
+
+.guest-workspace .settings-row input {
+  background: var(--obs-bg-raised, #2f2f2f);
+  border: 1px solid var(--obs-border, #3a3a3a);
+  color: var(--obs-text-primary, #dcddde);
+}
+
+.guest-workspace .notepad-container textarea {
+  flex: 1;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  color: var(--obs-text-primary, #dcddde);
+  background: var(--obs-bg-input, #1e1e1e);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  border-radius: var(--obs-radius, 6px);
+  padding: 10px 12px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.guest-workspace .notepad-container textarea:focus {
+  outline: none;
+  border-color: var(--obs-accent, #7a7a7a);
+}
+
+.guest-workspace .icon-button {
+  color: var(--obs-text-secondary, #999);
+}
+
+.guest-workspace .icon-button:hover {
+  color: var(--obs-text-primary, #dcddde);
+}

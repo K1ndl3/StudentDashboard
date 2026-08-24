@@ -53,13 +53,10 @@ function Login() {
         >
           <path
             d="M 50 15 L 85 35 L 85 40 Q 85 45 80 45 L 65 45 L 65 55 Q 65 60 60 60 L 40 60 Q 35 60 35 55 L 35 45 L 20 45 Q 15 45 15 40 L 15 35 Z"
-            fill="rgb(63, 41, 186)"
-            stroke="rgb(63, 41, 186)"
             strokeWidth="3"
           />
           <path
             d="M 50 65 L 50 75"
-            stroke="rgb(63, 41, 186)"
             strokeWidth="3"
             strokeLinecap="round"
           />
