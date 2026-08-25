@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "../../context/UserContext/GlobalContext";
+import ArchiveTitleModal from "./ArchiveTitleModal";
+import { addArchivedNote } from "./archiveStorage";
 import "./notepad.css"
 
 function Notepad({ isUserDashboard = false, hideHeader = false }) {
@@ -9,6 +11,7 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
     );
     const [isSaving, setIsSaving] = useState(false);
     const [isGetting, setIsGetting] = useState(false);
+    const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
     const textareaRef = useRef(null);
 
     const handleKeyDown = (e) => {
@@ -69,6 +72,10 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const handleArchiveNote = (title) => {
+        addArchivedNote(title, note);
     };
 
     const handleGetNotepad = async () => {
@@ -169,7 +176,22 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
                 value={note}
                 maxLength={1000}
             />
-            {isUserDashboard && <p className="note-character-count">{note.length}/1000</p>}
+            <div className="notepad-footer">
+                <button
+                    type="button"
+                    className="archive-note-button"
+                    onClick={() => setIsArchiveModalOpen(true)}
+                    disabled={!note.trim()}
+                >
+                    Save to Archive
+                </button>
+                {isUserDashboard && <p className="note-character-count">{note.length}/1000</p>}
+            </div>
+            <ArchiveTitleModal
+                isOpen={isArchiveModalOpen}
+                onClose={() => setIsArchiveModalOpen(false)}
+                onSave={handleArchiveNote}
+            />
         </div>
     )
 }

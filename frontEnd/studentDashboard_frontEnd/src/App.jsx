@@ -4,6 +4,7 @@ import Login from "./components/auth/login/login";
 import DashBoard from "./components/dashboard/dashboard";
 import GuestDashboard from "./components/guest-component/guest-dashboard/guest-dashboard";
 import Calendar from "./components/guest-component/calendar/calendar";
+import Archive from "./components/guest-component/archive/archive";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./components/context/AuthContext/AuthContext";
 import { ProtectedRoute } from "./components/protected-route/ProtectedRoute";
@@ -30,6 +31,7 @@ function App() {
               />
               <Route path="/guest-dashboard" element={<GuestDashboard />} />
               <Route path="/calendar" element={<Calendar />} />
+              <Route path="/archive" element={<Archive />} />
             </Routes>
           </BrowserRouter>
         </UserProvider>

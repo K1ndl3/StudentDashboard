@@ -39,16 +39,66 @@
     flex-direction: column;
 }
 
+.notepad-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.notepad-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 16px 10px 10px;
+    gap: 8px;
+}
+
+.archive-note-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    margin-right: auto;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--obs-border, #3a3a3a);
+    background: var(--obs-bg-raised, #2f2f2f);
+    color: var(--obs-text-primary, #dcddde);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 140ms ease, border-color 140ms ease;
+    flex-shrink: 0;
+}
+
+.archive-note-button:hover:not(:disabled) {
+    background: var(--obs-bg-hover, #363636);
+    border-color: var(--obs-accent, #7a7a7a);
+}
+
+.archive-note-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.notepad-container.user-dashboard .notepad-footer {
+    flex-shrink: 0;
+}
+
 textarea {
     background-color: transparent;
     width: 96%;
-    height: 50%;
+    flex: 1;
+    min-height: 0;
     color: rgba(230,230,255,0.9);
     resize: none;
     border: none;
     outline: none;
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.notepad-container:not(.user-dashboard) textarea {
+    height: 50%;
+    flex: none;
 }
 
 .notepad-container.user-dashboard textarea {
@@ -58,7 +108,7 @@ textarea {
 }
 
 .note-character-count {
-    margin: 6px 10px 10px;
+    margin: 8px 0 0 auto;
     text-align: right;
     font-size: 0.8rem;
     color: rgba(230, 230, 255, 0.7);

@@ -43,8 +43,19 @@
   font-weight: 600;
 }
 
+.guest-page .guest-button {
+  background: var(--obs-bg-raised, #2f2f2f);
+  color: var(--obs-text-primary, #dcddde);
+  border: 1px solid var(--obs-border, #3a3a3a);
+}
+
+.guest-page .guest-button:hover {
+  background: var(--obs-bg-hover, #363636);
+  border-color: var(--obs-accent, #7a7a7a);
+}
+
 .guest-page .guest-user {
-  color: var(--obs-text-secondary, #999);
+  color: var(--obs-text-primary, #dcddde);
 }
 
 .guest-page .sign-out-menu {

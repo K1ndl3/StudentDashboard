@@ -28,6 +28,22 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--obs-border, #3a3a3a);
+  background: var(--obs-bg-raised, #2f2f2f);
+  color: var(--obs-text-primary, #dcddde);
+  font-weight: 600;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.guest-button:hover {
+  background: var(--obs-bg-hover, #363636);
+  border-color: var(--obs-accent, #7a7a7a);
+}
+
+.guest-button .size-6 {
+  stroke: currentColor;
 }
 
 .guest-user {
