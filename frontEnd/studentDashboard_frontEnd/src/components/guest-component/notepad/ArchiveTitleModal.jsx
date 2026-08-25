@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import "./ArchiveTitleModal.css";
 
-function ArchiveTitleModal({ isOpen, onClose, onSave }) {
+function ArchiveTitleModal({ isOpen, onClose, onSave, existingTitle = "", isUpdate = false }) {
     const [title, setTitle] = useState("");
 
     useEffect(() => {
         if (!isOpen) return;
 
-        setTitle("");
+        setTitle(existingTitle);
         document.documentElement.classList.add("archive-modal-open");
         document.body.classList.add("archive-modal-open");
 
@@ -15,7 +15,7 @@ function ArchiveTitleModal({ isOpen, onClose, onSave }) {
             document.documentElement.classList.remove("archive-modal-open");
             document.body.classList.remove("archive-modal-open");
         };
-    }, [isOpen]);
+    }, [isOpen, existingTitle]);
 
     if (!isOpen) return null;
 
@@ -40,7 +40,9 @@ function ArchiveTitleModal({ isOpen, onClose, onSave }) {
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="archive-modal-header">
-                    <h2 className="archive-modal-title">Save to Archive</h2>
+                    <h2 className="archive-modal-title">
+                        {isUpdate ? "Update Archive" : "Save to Archive"}
+                    </h2>
                     <button
                         type="button"
                         className="archive-modal-close"
@@ -70,7 +72,7 @@ function ArchiveTitleModal({ isOpen, onClose, onSave }) {
                         onClick={handleSave}
                         disabled={!title.trim()}
                     >
-                        Save to Archive
+                        {isUpdate ? "Update Archive" : "Save to Archive"}
                     </button>
                 </div>
             </div>

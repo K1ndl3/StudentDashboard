@@ -39,7 +39,7 @@
 }
 
 .guest-page .logo {
-  color: var(--obs-text-primary, #dcddde);
+  color: #3f29ba;
   font-weight: 600;
 }
 

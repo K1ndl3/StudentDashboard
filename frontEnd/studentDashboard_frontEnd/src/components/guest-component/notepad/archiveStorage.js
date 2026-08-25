@@ -1,4 +1,5 @@
 const ARCHIVE_KEY = "notepad_archive";
+const LINKED_ARCHIVE_ID_KEY = "notepad_linkedArchiveId";
 
 export function loadArchivedNotes() {
     try {
@@ -13,6 +14,23 @@ export function saveArchivedNotes(notes) {
     localStorage.setItem(ARCHIVE_KEY, JSON.stringify(notes));
 }
 
+export function getLinkedArchiveId() {
+    return localStorage.getItem(LINKED_ARCHIVE_ID_KEY);
+}
+
+export function setLinkedArchiveId(id) {
+    if (id) {
+        localStorage.setItem(LINKED_ARCHIVE_ID_KEY, id);
+    } else {
+        localStorage.removeItem(LINKED_ARCHIVE_ID_KEY);
+    }
+}
+
+export function getArchivedNoteById(id) {
+    if (!id) return null;
+    return loadArchivedNotes().find((note) => note.id === id) ?? null;
+}
+
 export function addArchivedNote(title, content) {
     const notes = loadArchivedNotes();
     const newNote = {
@@ -25,6 +43,29 @@ export function addArchivedNote(title, content) {
     notes.unshift(newNote);
     saveArchivedNotes(notes);
     return newNote;
+}
+
+export function upsertArchivedNote(title, content, linkedArchiveId) {
+    const trimmedTitle = title.trim();
+    const notes = loadArchivedNotes();
+    const existingIndex = linkedArchiveId
+        ? notes.findIndex((note) => note.id === linkedArchiveId)
+        : -1;
+
+    if (existingIndex !== -1) {
+        const updatedNote = {
+            ...notes[existingIndex],
+            title: trimmedTitle,
+            content,
+            updatedAt: new Date().toISOString(),
+        };
+        notes[existingIndex] = updatedNote;
+        saveArchivedNotes(notes);
+        return { note: updatedNote, isUpdate: true };
+    }
+
+    const newNote = addArchivedNote(trimmedTitle, content);
+    return { note: newNote, isUpdate: false };
 }
 
 export function updateArchivedNote(id, updates) {

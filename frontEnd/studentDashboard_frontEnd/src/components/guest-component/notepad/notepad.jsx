@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "../../context/UserContext/GlobalContext";
 import ArchiveTitleModal from "./ArchiveTitleModal";
-import { addArchivedNote } from "./archiveStorage";
+import {
+    getArchivedNoteById,
+    getLinkedArchiveId,
+    setLinkedArchiveId,
+    upsertArchivedNote,
+} from "./archiveStorage";
 import "./notepad.css"
 
 function Notepad({ isUserDashboard = false, hideHeader = false }) {
@@ -12,7 +17,11 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isGetting, setIsGetting] = useState(false);
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+    const [linkedArchiveId, setLinkedArchiveIdState] = useState(() =>
+        isUserDashboard ? null : getLinkedArchiveId()
+    );
     const textareaRef = useRef(null);
+    const linkedArchiveNote = getArchivedNoteById(linkedArchiveId);
 
     const handleKeyDown = (e) => {
         if (e.key !== "Tab") return;
@@ -43,6 +52,30 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
         if (isUserDashboard) return;
         localStorage.setItem("userNote", note);
     }, [isUserDashboard, note]);
+
+    useEffect(() => {
+        if (isUserDashboard) return;
+        setLinkedArchiveId(linkedArchiveId);
+    }, [isUserDashboard, linkedArchiveId]);
+
+    useEffect(() => {
+        if (isUserDashboard) return;
+        if (!note.trim() && linkedArchiveId) {
+            setLinkedArchiveIdState(null);
+        }
+    }, [isUserDashboard, note, linkedArchiveId]);
+
+    useEffect(() => {
+        if (isUserDashboard || !linkedArchiveId) return;
+        if (!getArchivedNoteById(linkedArchiveId)) {
+            setLinkedArchiveIdState(null);
+        }
+    }, [isUserDashboard, linkedArchiveId, isArchiveModalOpen]);
+
+    useEffect(() => {
+        if (!isUserDashboard) return;
+        setLinkedArchiveIdState(null);
+    }, [isUserDashboard, userData?.notepad]);
 
     const handleSyncNotepad = async () => {
         const token = localStorage.getItem("token");
@@ -75,7 +108,8 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
     };
 
     const handleArchiveNote = (title) => {
-        addArchivedNote(title, note);
+        const { note: savedNote } = upsertArchivedNote(title, note, linkedArchiveId);
+        setLinkedArchiveIdState(savedNote.id);
     };
 
     const handleGetNotepad = async () => {
@@ -183,7 +217,7 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
                     onClick={() => setIsArchiveModalOpen(true)}
                     disabled={!note.trim()}
                 >
-                    Save to Archive
+                    {linkedArchiveNote ? "Update Archive" : "Save to Archive"}
                 </button>
                 {isUserDashboard && <p className="note-character-count">{note.length}/1000</p>}
             </div>
@@ -191,6 +225,8 @@ function Notepad({ isUserDashboard = false, hideHeader = false }) {
                 isOpen={isArchiveModalOpen}
                 onClose={() => setIsArchiveModalOpen(false)}
                 onSave={handleArchiveNote}
+                existingTitle={linkedArchiveNote?.title ?? ""}
+                isUpdate={Boolean(linkedArchiveNote)}
             />
         </div>
     )

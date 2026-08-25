@@ -12,6 +12,16 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: #3f29ba;
+  font-weight: 600;
+}
+
+.logo .size-6 {
+  stroke: currentColor;
+}
+
+.logo p {
+  margin: 0;
 }
 
 .size-6 {

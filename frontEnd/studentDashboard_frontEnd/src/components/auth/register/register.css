@@ -13,6 +13,13 @@
     gap: 15px;
 }
 
+.register-container h1 {
+    color: #999;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
 .register-container input {
     background-color: #1a1a1a;
     border: 1px solid #404040;
@@ -30,19 +37,34 @@
 }
 
 
+.register-container .button-span {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    width: 100%;
+}
+
 .register-container button {
     margin-top: 30px;
     display: flex;
     flex-direction: row;
-    color: white;
-    background-color: rgb(63, 41, 186);
-    border: none;
+    justify-content: center;
+    align-items: center;
+    color: #999;
+    background-color: #2f2f2f;
+    border: 1px solid #3a3a3a;
     border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     width: 250px;
+    height: 50px;
+}
+
+.register-container button:hover {
+    background-color: #363636;
+    border-color: #7a7a7a;
 }
 
 .register-container .size-6 {
