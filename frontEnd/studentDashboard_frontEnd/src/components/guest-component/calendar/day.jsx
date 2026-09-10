@@ -1,25 +1,68 @@
-import "./day.css"
+import "./day.css";
 
-function Day({dayNumber, isoDate, hasEvent, onClick}) {
+const MAX_PILLS = 2;
+
+function fmtTime(t) {
+    if (!t) return "";
+    // t is HH:MM
+    const [hStr, mStr] = t.split(":");
+    const h = parseInt(hStr, 10);
+    const m = mStr ?? "00";
+    const suffix = h >= 12 ? "pm" : "am";
+    const h12 = h % 12 || 12;
+    return `${h12}:${m}${suffix}`;
+}
+
+function Day({ day, isoDate, events = [], isCurrentMonth, isToday, isSelected, onClick }) {
+    const hasEvents = events.length > 0;
+    const pillEvents = events.slice(0, MAX_PILLS);
+    const overflow = events.length - MAX_PILLS;
+
+    const cls = [
+        "cal-day",
+        isCurrentMonth ? "" : "other-month",
+        isToday ? "is-today" : "",
+        isSelected ? "is-selected" : "",
+        !isCurrentMonth ? "" : hasEvents ? "has-events" : "",
+    ].filter(Boolean).join(" ");
 
     return (
         <div
-            className="days"
-            onClick={() => dayNumber && onClick(isoDate)}
+            className={cls}
+            onClick={() => isoDate && onClick(isoDate)}
+            role="button"
+            tabIndex={isoDate ? 0 : -1}
+            aria-label={isoDate ? `${isoDate}${hasEvents ? `, ${events.length} event${events.length > 1 ? "s" : ""}` : ""}` : undefined}
+            onKeyDown={(e) => {
+                if ((e.key === "Enter" || e.key === " ") && isoDate) {
+                    e.preventDefault();
+                    onClick(isoDate);
+                }
+            }}
         >
-            {dayNumber && (
-                <>
-                    <div className="day-number">{dayNumber}</div>   
-                </>
-            )}
-            {
-                hasEvent && <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                            </svg>
+            {/* Day number */}
+            <div className={`cal-day-number${isToday ? " today-circle" : ""}`}>
+                {day}
+            </div>
 
-            }  
+            {/* Event pills */}
+            {isCurrentMonth && (
+                <div className="cal-event-pills">
+                    {pillEvents.map((ev) => (
+                        <div key={ev.id} className="cal-event-pill" title={`${fmtTime(ev.currtime)} ${ev.details}`}>
+                            {ev.currtime && (
+                                <span className="pill-time">{fmtTime(ev.currtime)}</span>
+                            )}
+                            <span className="pill-title">{ev.details}</span>
+                        </div>
+                    ))}
+                    {overflow > 0 && (
+                        <div className="cal-event-overflow">+{overflow} more</div>
+                    )}
+                </div>
+            )}
         </div>
-    )
+    );
 }
 
-export default Day
+export default Day;

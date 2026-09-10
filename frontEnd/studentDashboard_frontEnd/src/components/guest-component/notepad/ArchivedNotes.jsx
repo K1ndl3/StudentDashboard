@@ -256,13 +256,12 @@ function ArchivedNotes() {
                                 className="archived-note-edit-content"
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
-                                maxLength={1000}
                             />
                         </div>
 
                         <div className="archived-note-actions">
                             <span className="archived-note-char-count">
-                                {editContent.length}/1000
+                                {editContent.length} chars
                             </span>
                             <div className="archived-note-action-buttons">
                                 <button

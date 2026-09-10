@@ -1,0 +1,13 @@
+{
+  "name": "student-dashboard",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontEnd/studentDashboard_frontEnd run dev",
+    "build": "npm --prefix frontEnd/studentDashboard_frontEnd run build",
+    "lint": "npm --prefix frontEnd/studentDashboard_frontEnd run lint"
+  },
+  "dependencies": {
+    "@lexical/list": "^0.50.0",
+    "@lexical/markdown": "^0.50.0"
+  }
+}

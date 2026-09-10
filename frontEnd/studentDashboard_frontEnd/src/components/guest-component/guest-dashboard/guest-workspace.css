@@ -279,6 +279,34 @@
   border-color: var(--obs-accent, #7a7a7a);
 }
 
+/* Rich editor inside workspace */
+.guest-workspace .notepad-editor-wrapper {
+  background: var(--obs-bg-input, #1e1e1e);
+  border: 1px solid var(--obs-border-subtle, #2f2f2f);
+  border-radius: var(--obs-radius, 6px);
+  margin: 0;
+  overflow: hidden;
+}
+
+.guest-workspace .notepad-toolbar {
+  background: var(--obs-bg-raised, #2f2f2f);
+  border-bottom: 1px solid var(--obs-border-subtle, #2f2f2f);
+  padding: 4px 8px;
+}
+
+.guest-workspace .notepad-rich-editor {
+  background: transparent;
+  color: var(--obs-text-primary, #dcddde);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.guest-workspace .notepad-rich-editor:focus {
+  outline: none;
+}
+
 .guest-workspace .icon-button {
   color: var(--obs-text-secondary, #999);
 }

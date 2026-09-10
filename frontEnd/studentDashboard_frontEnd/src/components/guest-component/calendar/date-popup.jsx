@@ -57,10 +57,17 @@ function DatePopup({isoDate, onClose}) {
         setDetail("")
         setTime("")
     }
+    // Format ISO date → "Mon, Sep 10"
+    const fmtHeader = (iso) => {
+        const [y, m, d] = iso.split("-");
+        const dt = new Date(Number(y), Number(m) - 1, Number(d));
+        return dt.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+    };
+
     return (
         <div className="popup-container">
             <div className="popup-header">
-                <h2>{isoDate}</h2>
+                <h2>{fmtHeader(isoDate)}</h2>
                 <button
                     className="popup-button"
                     onClick={onClose}
