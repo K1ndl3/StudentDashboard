@@ -50,7 +50,7 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private String calendarLink;
 
-    @Column(nullable = true, length = 1000, columnDefinition = "TEXT")
+    @Column(nullable = true, length = 10000, columnDefinition = "TEXT")
     private String notepad;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

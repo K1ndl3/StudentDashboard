@@ -24,6 +24,17 @@ function Login() {
 
       if (res.ok) {
         const data = await res.json();
+        try {
+          await fetch("http://localhost:8080/api/canvas-events/refresh", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+            },
+          });
+        } catch (refreshError) {
+          // Calendar refresh must not prevent a successful login.
+          console.error("Could not refresh Canvas events during login:", refreshError);
+        }
         // update AuthContext state and localStorage via login()
         login(data.token);
         console.log(data.token);

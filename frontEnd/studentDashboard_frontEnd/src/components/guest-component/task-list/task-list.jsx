@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import "./task-list.css"
 
 /* ─── Schema helpers ─────────────────────────────────────────────── */
 function normalizeTask(raw) {
     return {
         id: raw.id ?? Date.now(),
-        text: raw.text ?? raw.title ?? "",
+        text: raw.text ?? raw.title ?? raw.summary ?? "",
         completed: raw.completed ?? false,
         type: raw.type ?? "checkbox",       // "checkbox" | "progress"
         priority: raw.priority ?? null,     // null | "low" | "medium" | "high"
@@ -64,13 +64,22 @@ const SubtaskIcon = () => (
 );
 
 /* ─── Individual task row ────────────────────────────────────────── */
-function TaskItem({ task, onToggle, onDelete, onToggleExpand, onUpdateProgress, onAddSubtask, onToggleSubtask, onDeleteSubtask }) {
+function TaskItem({ task, isSelected, dropPosition, onSelect, onToggle, onDelete, onToggleExpand, onUpdateProgress, onAddSubtask, onToggleSubtask, onDeleteSubtask, onDragStart, onDragOver, onDrop, onDragEnd, canReorder }) {
     const [subtaskInput, setSubtaskInput] = useState("");
     const [progressInput, setProgressInput] = useState(task.completedUnits);
+    const itemRef = useRef(null);
 
+    useEffect(() => {
+        if (!task.expanded) return;
+        itemRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, [task.expanded]);
+
+    const displayedUnits = isSelected
+        ? Math.max(0, Math.min(Number(progressInput) || 0, task.totalUnits))
+        : task.completedUnits;
     const subtasksDone = task.subtasks.filter(st => st.completed).length;
     const progressPct = task.totalUnits > 0
-        ? Math.round((task.completedUnits / task.totalUnits) * 100)
+        ? Math.round((displayedUnits / task.totalUnits) * 100)
         : 0;
 
     const dueCls = isOverdue(task.dueDate) ? "due-overdue"
@@ -88,13 +97,46 @@ function TaskItem({ task, onToggle, onDelete, onToggleExpand, onUpdateProgress, 
         onUpdateProgress(task.id, progressInput);
     };
 
+    const handleProgressKeyDown = (event) => {
+        if (!isSelected || task.type !== "progress") return;
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+            event.preventDefault();
+            setProgressInput((current) => Math.max(
+                0,
+                Math.min(Number(current) + (event.key === "ArrowUp" ? 1 : -1), task.totalUnits)
+            ));
+        } else if (event.key === "Enter") {
+            event.preventDefault();
+            handleUpdateProgress();
+        }
+    };
+
     return (
-        <li className={`task-item${task.completed ? " completed" : ""}${task.expanded ? " expanded" : ""}`}>
+        <li
+            ref={itemRef}
+            className={`task-item${task.completed ? " completed" : ""}${task.expanded ? " expanded" : ""}${isSelected ? " progress-selected" : ""}${dropPosition ? ` drop-${dropPosition}` : ""}`}
+            draggable={canReorder}
+            onDragStart={(event) => onDragStart(task.id, event)}
+            onDragOver={(event) => onDragOver(task.id, event)}
+            onDrop={(event) => onDrop(task.id, event)}
+            onDragEnd={onDragEnd}
+        >
             {/* ── Compact row ── */}
-            <div className="task-row">
+            <div
+                className={`task-row${task.type === "progress" ? " progress-task-row" : ""}`}
+                onClick={() => task.type === "progress" && onSelect(task.id)}
+                onKeyDown={handleProgressKeyDown}
+                tabIndex={task.type === "progress" ? 0 : undefined}
+                role={task.type === "progress" ? "button" : undefined}
+                aria-label={task.type === "progress" ? `${task.text}. Use up and down arrow keys to change progress, then Enter to save.` : undefined}
+            >
+                {canReorder && <span className="task-drag-handle" aria-label="Drag to reorder task">⠿</span>}
                 <button
                     className="expand-btn"
-                    onClick={() => onToggleExpand(task.id)}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onToggleExpand(task.id);
+                    }}
                     aria-label={task.expanded ? "Collapse" : "Expand"}
                     aria-expanded={task.expanded}
                     title={task.expanded ? "Hide task details" : "Edit task details, subtasks, or progress"}
@@ -105,12 +147,15 @@ function TaskItem({ task, onToggle, onDelete, onToggleExpand, onUpdateProgress, 
                 {/* Completion control */}
                 {task.type === "progress" ? (
                     <span className="progress-badge-inline">
-                        {task.completedUnits}/{task.totalUnits}
+                        {displayedUnits}/{task.totalUnits}
                     </span>
                 ) : (
                     <button
                         className={`checkbox-btn${task.completed ? " checked" : ""}`}
-                        onClick={() => onToggle(task.id)}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            onToggle(task.id);
+                        }}
                         aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
                     >
                         {task.completed && <CheckIcon />}
@@ -138,7 +183,10 @@ function TaskItem({ task, onToggle, onDelete, onToggleExpand, onUpdateProgress, 
 
                 <button
                     className="task-delete-btn"
-                    onClick={() => onDelete(task.id)}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onDelete(task.id);
+                    }}
                     aria-label="Delete task"
                     title="Delete"
                 >
@@ -199,7 +247,9 @@ function TaskItem({ task, onToggle, onDelete, onToggleExpand, onUpdateProgress, 
                                     max={task.totalUnits}
                                     value={progressInput}
                                     onChange={e => setProgressInput(e.target.value)}
-                                    onKeyDown={e => e.key === "Enter" && handleUpdateProgress()}
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter") handleUpdateProgress();
+                                    }}
                                     className="progress-num-input"
                                     aria-label="Completed units"
                                 />
@@ -413,8 +463,12 @@ function AddTaskForm({ onAdd, onCancel }) {
 }
 
 /* ─── Main task list ─────────────────────────────────────────────── */
-function TaskList({ hideHeader = false }) {
+function TaskList({ hideHeader = false, remoteTasks, onTasksChange, onTaskDelete }) {
+    const usesRemoteTasks = Array.isArray(remoteTasks);
     const [tasks, setTasks] = useState(() => {
+        if (usesRemoteTasks) {
+            return remoteTasks.map(normalizeTask);
+        }
         try {
             const raw = localStorage.getItem("taskList");
             const parsed = raw ? JSON.parse(raw) : [{ id: 1, text: "Enter a Task", completed: false }];
@@ -427,12 +481,25 @@ function TaskList({ hideHeader = false }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [filter, setFilter] = useState("all");   // "all" | "active" | "done"
     const [sortBy, setSortBy] = useState("added"); // "added" | "due" | "priority"
+    const [draggedTaskId, setDraggedTaskId] = useState(null);
+    const [dropTarget, setDropTarget] = useState(null);
+    const [selectedProgressTaskId, setSelectedProgressTaskId] = useState(null);
+
+    useEffect(() => {
+        if (usesRemoteTasks) {
+            setTasks(remoteTasks.map(normalizeTask));
+        }
+    }, [remoteTasks, usesRemoteTasks]);
 
     /* ── Persist (exclude runtime-only `expanded`) ── */
     useEffect(() => {
         const toSave = tasks.map(({ expanded, ...rest }) => rest); // eslint-disable-line no-unused-vars
+        if (usesRemoteTasks) {
+            onTasksChange?.(toSave);
+            return;
+        }
         localStorage.setItem("taskList", JSON.stringify(toSave));
-    }, [tasks]);
+    }, [tasks, usesRemoteTasks, onTasksChange]);
 
     /* ── Mutations ── */
     const addTask = (fields) => {
@@ -441,7 +508,13 @@ function TaskList({ hideHeader = false }) {
         setShowAddForm(false);
     };
 
-    const deleteTask = (id) => setTasks(prev => prev.filter(t => t.id !== id));
+    const deleteTask = async (id) => {
+        if (usesRemoteTasks && onTaskDelete) {
+            const deleted = await onTaskDelete(id);
+            if (!deleted) return;
+        }
+        setTasks(prev => prev.filter(t => t.id !== id));
+    };
 
     const toggleTask = (id) => setTasks(prev => prev.map(t => {
         if (t.id !== id) return t;
@@ -464,6 +537,20 @@ function TaskList({ hideHeader = false }) {
         const val = Math.max(0, Math.min(Number(raw) || 0, t.totalUnits));
         return { ...t, completedUnits: val, completed: val >= t.totalUnits };
     }));
+
+    const reorderTasks = (sourceId, targetId, position) => {
+        if (sourceId === targetId) return;
+        setTasks(prev => {
+            const sourceIndex = prev.findIndex(t => t.id === sourceId);
+            const targetIndex = prev.findIndex(t => t.id === targetId);
+            if (sourceIndex < 0 || targetIndex < 0) return prev;
+            const next = [...prev];
+            const [source] = next.splice(sourceIndex, 1);
+            const nextTargetIndex = next.findIndex(t => t.id === targetId);
+            next.splice(nextTargetIndex + (position === "after" ? 1 : 0), 0, source);
+            return next;
+        });
+    };
 
     const addSubtask = (taskId, text) => setTasks(prev => prev.map(t => {
         if (t.id !== taskId) return t;
@@ -508,10 +595,11 @@ function TaskList({ hideHeader = false }) {
                 if (!b.dueDate) return -1;
                 return a.dueDate.localeCompare(b.dueDate);
             }
-            return b.id - a.id; // "added" — newest first
+            return 0; // "added" — preserves the manually arranged order
         });
 
     const doneCount = tasks.filter(t => t.completed).length;
+    const canReorder = filter === "all" && sortBy === "added";
 
     return (
         <div className="tasklist-container">
@@ -575,6 +663,9 @@ function TaskList({ hideHeader = false }) {
                     <TaskItem
                         key={task.id}
                         task={task}
+                        isSelected={selectedProgressTaskId === task.id}
+                        dropPosition={dropTarget?.id === task.id ? dropTarget.position : null}
+                        onSelect={setSelectedProgressTaskId}
                         onToggle={toggleTask}
                         onDelete={deleteTask}
                         onToggleExpand={toggleExpand}
@@ -582,6 +673,36 @@ function TaskList({ hideHeader = false }) {
                         onAddSubtask={addSubtask}
                         onToggleSubtask={toggleSubtask}
                         onDeleteSubtask={deleteSubtask}
+                        canReorder={canReorder}
+                        onDragStart={(id, event) => {
+                            setDraggedTaskId(id);
+                            setDropTarget(null);
+                            event.dataTransfer.effectAllowed = "move";
+                            event.dataTransfer.setData("text/plain", String(id));
+                        }}
+                        onDragOver={(id, event) => {
+                            if (id === draggedTaskId) return;
+                            event.preventDefault();
+                            const bounds = event.currentTarget.getBoundingClientRect();
+                            setDropTarget({
+                                id,
+                                position: event.clientY < bounds.top + bounds.height / 2 ? "before" : "after",
+                            });
+                        }}
+                        onDrop={(id, event) => {
+                            event.preventDefault();
+                            const bounds = event.currentTarget.getBoundingClientRect();
+                            const position = event.clientY < bounds.top + bounds.height / 2 ? "before" : "after";
+                            if (draggedTaskId !== null) {
+                                reorderTasks(draggedTaskId, id, position);
+                            }
+                            setDraggedTaskId(null);
+                            setDropTarget(null);
+                        }}
+                        onDragEnd={() => {
+                            setDraggedTaskId(null);
+                            setDropTarget(null);
+                        }}
                     />
                 ))}
             </ul>

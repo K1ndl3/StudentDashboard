@@ -5,6 +5,11 @@ import {
     deleteArchivedNote,
     formatDisplayDate,
 } from "./archiveStorage";
+import {
+    deleteUserArchivedNote,
+    loadUserArchivedNotes,
+    updateUserArchivedNote,
+} from "./userArchiveApi";
 import "./ArchivedNotes.css";
 
 function getPreview(content, maxLength = 140) {
@@ -32,16 +37,37 @@ function groupNotesByDate(notes) {
         ]);
 }
 
-function ArchivedNotes() {
-    const [notes, setNotes] = useState([]);
+function ArchivedNotes({ isUserDashboard = false }) {
+    const [notes, setNotes] = useState(() =>
+        isUserDashboard ? [] : loadArchivedNotes()
+    );
+    const [isLoading, setIsLoading] = useState(isUserDashboard);
+    const [loadError, setLoadError] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [activeNoteId, setActiveNoteId] = useState(null);
     const [editTitle, setEditTitle] = useState("");
     const [editContent, setEditContent] = useState("");
 
     useEffect(() => {
-        setNotes(loadArchivedNotes());
-    }, []);
+        if (!isUserDashboard) return;
+
+        let isCurrent = true;
+        loadUserArchivedNotes()
+            .then((loadedNotes) => {
+                if (isCurrent) setNotes(loadedNotes);
+            })
+            .catch((error) => {
+                console.error("Cannot load archived notes:", error);
+                if (isCurrent) setLoadError("Could not load archived notes.");
+            })
+            .finally(() => {
+                if (isCurrent) setIsLoading(false);
+            });
+
+        return () => {
+            isCurrent = false;
+        };
+    }, [isUserDashboard]);
 
     useEffect(() => {
         if (!activeNoteId) return;
@@ -86,21 +112,44 @@ function ArchivedNotes() {
         setEditContent("");
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!activeNoteId || !editTitle.trim()) return;
-        const updated = updateArchivedNote(activeNoteId, {
-            title: editTitle.trim(),
-            content: editContent,
-        });
-        setNotes(updated);
-        closeNote();
+        try {
+            if (isUserDashboard) {
+                const savedNote = await updateUserArchivedNote(activeNoteId, {
+                    title: editTitle.trim(),
+                    content: editContent,
+                });
+                setNotes((current) =>
+                    current.map((note) => note.id === savedNote.id ? savedNote : note)
+                );
+            } else {
+                setNotes(updateArchivedNote(activeNoteId, {
+                    title: editTitle.trim(),
+                    content: editContent,
+                }));
+            }
+            closeNote();
+        } catch (error) {
+            console.error("Cannot update archived note:", error);
+            alert("Cannot update this note right now. Try again.");
+        }
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (!activeNoteId) return;
-        const updated = deleteArchivedNote(activeNoteId);
-        setNotes(updated);
-        closeNote();
+        try {
+            if (isUserDashboard) {
+                await deleteUserArchivedNote(activeNoteId);
+                setNotes((current) => current.filter((note) => note.id !== activeNoteId));
+            } else {
+                setNotes(deleteArchivedNote(activeNoteId));
+            }
+            closeNote();
+        } catch (error) {
+            console.error("Cannot delete archived note:", error);
+            alert("Cannot delete this note right now. Try again.");
+        }
     };
 
     return (
@@ -144,7 +193,16 @@ function ArchivedNotes() {
                 </header>
 
                 <div className="archived-notes-body">
-                    {notes.length === 0 ? (
+                    {isLoading ? (
+                        <div className="archived-notes-empty">
+                            <h2>Loading archived notes…</h2>
+                        </div>
+                    ) : loadError ? (
+                        <div className="archived-notes-empty">
+                            <h2>{loadError}</h2>
+                            <p>Return to the dashboard and try again.</p>
+                        </div>
+                    ) : notes.length === 0 ? (
                         <div className="archived-notes-empty">
                             <div className="archived-notes-empty-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

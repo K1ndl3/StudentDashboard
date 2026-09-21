@@ -21,6 +21,8 @@ public class CanvasEvent{
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = true, length = 1000)
+    private String externalId;
     @Column(nullable = true)
     private LocalDateTime dueDate;
     @Column(nullable = true, length = 1000)
@@ -45,6 +47,10 @@ public class CanvasEvent{
         this.dueDate = dueDate;
         this.description = description;
         this.summary = summary;
+    }
+
+    public String getExternalId() {
+        return this.externalId;
     }
 
     public long getId() {

@@ -2,6 +2,8 @@ package com.ScholarSync.backend.global_context_module.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -46,7 +48,7 @@ public class GlobalContextService {
         );
     }
 
-    // this will save the userTask as a list to the user
+    // Reconcile the complete guest-style task list for this user.
     @Transactional
     public String saveUserTasks(String currUserEmail, List<UserTask> tasks) {
         Optional<User> user = userRepository.findByEmail(currUserEmail);
@@ -54,9 +56,30 @@ public class GlobalContextService {
             throw new RuntimeException("user not found");
         }
 
-        tasks.forEach(task -> task.setUser(user.get()));
-        userTaskRepository.saveAll(tasks);
-        return "Saved " + tasks.size() + " tasks to database";
+        List<UserTask> safeTasks = tasks == null ? List.of() : tasks;
+        Set<Long> incomingIds = safeTasks.stream()
+            .map(UserTask::getId)
+            .collect(Collectors.toSet());
+
+        List<UserTask> existingTasks = userTaskRepository.findAllByUserEmail(currUserEmail);
+        Set<Long> existingIds = existingTasks.stream()
+            .map(UserTask::getId)
+            .collect(Collectors.toSet());
+
+        boolean containsForeignTask = incomingIds.stream()
+            .anyMatch(id -> !existingIds.contains(id) && userTaskRepository.existsById(id));
+        if (containsForeignTask) {
+            throw new IllegalArgumentException("cannot update another user's task");
+        }
+
+        userTaskRepository.deleteAll(
+            existingTasks.stream()
+                .filter(task -> !incomingIds.contains(task.getId()))
+                .toList()
+        );
+        safeTasks.forEach(task -> task.setUser(user.get()));
+        userTaskRepository.saveAll(safeTasks);
+        return "Saved " + safeTasks.size() + " tasks to database";
     }
 
     @Transactional
@@ -78,8 +101,8 @@ public class GlobalContextService {
         }
 
         String trimmedNotepad = notepad == null ? "" : notepad;
-        if (trimmedNotepad.length() > 1000) {
-            throw new IllegalArgumentException("notepad cannot exceed 1000 characters");
+        if (trimmedNotepad.length() > 10000) {
+            throw new IllegalArgumentException("notepad cannot exceed 10000 characters");
         }
 
         User currentUser = user.get();

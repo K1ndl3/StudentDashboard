@@ -1,33 +1,113 @@
-.dashboard-container  {
-  border: none;
+.dashboard-container {
+  --obs-bg-base: #1a1a1a;
+  --obs-bg-surface: #262626;
+  --obs-bg-raised: #2f2f2f;
+  --obs-bg-hover: #363636;
+  --obs-bg-input: #1e1e1e;
+  --obs-border: #3a3a3a;
+  --obs-border-subtle: #2f2f2f;
+  --obs-text-primary: #dcddde;
+  --obs-text-secondary: #999;
+  --obs-accent: #7a7a7a;
+  --obs-radius: 6px;
+  --obs-radius-lg: 8px;
+  --obs-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  height: 100%;
   width: 100%;
+  height: 100%;
   min-height: 0;
-  color: white;
+  color: var(--obs-text-primary);
+  background: var(--obs-bg-base);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   box-sizing: border-box;
 }
 
+.dashboard-topbar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.dashboard-container .header {
+  background: var(--obs-bg-surface);
+  border-bottom: 1px solid var(--obs-border-subtle);
+}
+
+.dashboard-container .sign-out-menu {
+  background: var(--obs-bg-raised);
+  border-color: var(--obs-border);
+}
+
 .refresh-button {
-  margin-left: 13px;
+  position: absolute;
+  right: 170px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 7px 10px;
+  border: 1px solid var(--obs-border);
+  border-radius: var(--obs-radius);
+  background: var(--obs-bg-raised);
+  color: var(--obs-text-secondary);
+  cursor: pointer;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: var(--obs-bg-hover);
+  border-color: var(--obs-accent);
+  color: var(--obs-text-primary);
+}
+
+.refresh-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .content-container {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    min-height: 0;
-    min-width: 0;
-    width: 100%;
-    gap: 10px;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.dashboard-container .sidebar-container {
+  width: 88px;
+  flex-shrink: 0;
+  height: 100%;
+  padding: 12px 8px;
+  margin: 0;
+  border-right: 1px solid var(--obs-border-subtle);
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.dashboard-container .sidebar-container button {
+  background: var(--obs-bg-surface);
+  border: 1px solid var(--obs-border-subtle);
+  color: var(--obs-text-secondary);
+  border-radius: var(--obs-radius);
+  box-shadow: none;
+}
+
+.dashboard-container .sidebar-container button:hover {
+  background: var(--obs-bg-hover);
+  border-color: var(--obs-border);
+  color: var(--obs-text-primary);
+}
+
+.dashboard-workspace {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px 12px 12px;
+  box-sizing: border-box;
 }
 
 .resizable-panels {
   display: flex;
   flex: 1;
   min-width: 0;
+  min-height: 0;
   align-items: stretch;
 }
 
@@ -39,11 +119,69 @@
 
 .resizable-panel {
   min-width: 0;
+  min-height: 0;
   display: flex;
 }
 
+.dashboard-panel-wrapper {
+  display: contents;
+}
+
+.dashboard-panel {
+  flex-direction: column;
+  flex-shrink: 0;
+  background: var(--obs-bg-surface);
+  border: 1px solid var(--obs-border-subtle);
+  border-radius: var(--obs-radius-lg);
+  box-shadow: var(--obs-shadow);
+  overflow: hidden;
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.dashboard-panel.is-dragging {
+  opacity: 0.55;
+}
+
+.dashboard-panel.is-drag-over {
+  border-color: var(--obs-accent);
+}
+
+.dashboard-panel-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--obs-bg-raised);
+  border-bottom: 1px solid var(--obs-border-subtle);
+  color: var(--obs-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.dashboard-panel-tab:active {
+  cursor: grabbing;
+}
+
+.dashboard-panel-tab-grip {
+  color: var(--obs-accent);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.dashboard-panel-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .resize-handle {
-  width: 8px;
+  width: 6px;
+  flex-shrink: 0;
   border: none;
   background: transparent;
   cursor: col-resize;
@@ -55,26 +193,185 @@
 .resize-handle::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: 8px 0;
   border-radius: 99px;
-  background: rgba(100, 60, 255, 0.22);
-  transition: background 0.15s ease;
+  background: var(--obs-border-subtle);
 }
 
 .resize-handle:hover::before {
-  background: rgba(100, 60, 255, 0.45);
+  background: var(--obs-accent);
 }
 
-.resizable-panel > .container {
+/* Fit existing authenticated widgets into the shared panel treatment. */
+.dashboard-workspace .container,
+.dashboard-workspace .timer-container.user-dashboard,
+.dashboard-workspace .notepad-container.user-dashboard {
   width: 100%;
-  margin-left: 0;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  margin: 0;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-sizing: border-box;
 }
 
-.resizable-panel > .timer-container.user-dashboard {
-  width: 100%;
+.dashboard-workspace .container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  scrollbar-color: var(--obs-border) transparent;
 }
 
-.resizable-panel > .notepad-container.user-dashboard {
+.dashboard-workspace .tasklist-container {
+  flex: 1;
   width: 100%;
-  margin-right: 20px;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.dashboard-workspace .user-task {
+  display: none;
+}
+
+.dashboard-workspace .canvas-task {
+  border-color: var(--obs-border-subtle);
+  flex-shrink: 0;
+  max-height: none;
+}
+
+.dashboard-workspace .user-task-header,
+.dashboard-workspace .canvas-task-header {
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.dashboard-workspace .user-task-header .title {
+  display: none;
+}
+
+.dashboard-workspace .canvas-task-header .title {
+  color: var(--obs-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dashboard-workspace .user-task-buttons button,
+.dashboard-workspace .canvas-task-header button {
+  border: 1px solid var(--obs-border);
+  border-radius: var(--obs-radius);
+  background: var(--obs-bg-raised);
+  color: var(--obs-text-primary);
+}
+
+.dashboard-workspace .event-container {
+  background: var(--obs-bg-input);
+  border-color: var(--obs-border-subtle);
+  box-shadow: none;
+}
+
+.dashboard-workspace .event-container .summary,
+.dashboard-workspace .event-container .event-detail .summary {
+  color: var(--obs-text-primary);
+}
+
+.dashboard-workspace .event-container .delete-button {
+  background: transparent;
+  border-color: var(--obs-border-subtle);
+  color: var(--obs-text-secondary);
+}
+
+.dashboard-workspace .canvas-filter-date {
+  background: var(--obs-bg-input);
+  border-color: var(--obs-border);
+  color: var(--obs-text-primary);
+}
+
+.dashboard-workspace .timer-container.user-dashboard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-workspace .timer-header h2,
+.dashboard-workspace .notepad-header h1 {
+  display: none;
+}
+
+.dashboard-workspace .timer-header {
+  justify-content: flex-end;
+}
+
+.dashboard-workspace .timer-container.user-dashboard .timer-body {
+  flex: 1;
+  justify-content: center;
+}
+
+.dashboard-workspace .mode-label,
+.dashboard-workspace .cycle-count,
+.dashboard-workspace .note-character-count {
+  color: var(--obs-text-secondary);
+}
+
+.dashboard-workspace .time-display {
+  color: var(--obs-text-primary);
+}
+
+.dashboard-workspace .settings-panel {
+  background: var(--obs-bg-input);
+  border: 1px solid var(--obs-border-subtle);
+}
+
+.dashboard-workspace .settings-row label {
+  color: var(--obs-text-secondary);
+}
+
+.dashboard-workspace .settings-row input,
+.dashboard-workspace textarea {
+  background: var(--obs-bg-input);
+  border: 1px solid var(--obs-border-subtle);
+  border-radius: var(--obs-radius);
+  color: var(--obs-text-primary);
+  box-sizing: border-box;
+}
+
+.dashboard-workspace .notepad-container.user-dashboard textarea {
+  flex: 1;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.dashboard-workspace .start-button,
+.dashboard-workspace .reset-button,
+.dashboard-workspace .save-button,
+.dashboard-workspace .cancel-button,
+.dashboard-workspace .archive-note-button {
+  background: var(--obs-bg-raised);
+  border: 1px solid var(--obs-border);
+  border-radius: var(--obs-radius);
+  color: var(--obs-text-primary);
+}
+
+@media (max-width: 900px) {
+  .dashboard-workspace {
+    overflow-x: auto;
+  }
+
+  .resizable-panels {
+    min-width: 900px;
+  }
+
+  .refresh-button {
+    right: 150px;
+    font-size: 12px;
+  }
 }

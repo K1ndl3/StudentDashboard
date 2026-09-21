@@ -6,12 +6,63 @@ import Sidebar from "../user-component/sidebar/sidebar";
 import Timer from "../guest-component/timer/timer";
 import Notepad from "../guest-component/notepad/notepad";
 import { useEffect, useRef, useState } from "react";
-function DashBoard({ props }) {
+
+const PANEL_LABELS = {
+  tasks: "Tasks",
+  timer: "Timer",
+  notes: "Notes",
+};
+const DEFAULT_PANEL_ORDER = ["tasks", "timer", "notes"];
+const DEFAULT_PANEL_WIDTHS = [40, 36, 24];
+const TOTAL_DIVIDER_WIDTH = (DEFAULT_PANEL_ORDER.length - 1) * 10;
+
+const getStoredPanelOrder = () => {
+  try {
+    const storedOrder = JSON.parse(
+      localStorage.getItem("user_panel_order") ?? "null",
+    );
+    const isValidOrder =
+      Array.isArray(storedOrder) &&
+      storedOrder.length === DEFAULT_PANEL_ORDER.length &&
+      DEFAULT_PANEL_ORDER.every((panelId) => storedOrder.includes(panelId));
+    return isValidOrder ? storedOrder : DEFAULT_PANEL_ORDER;
+  } catch {
+    return DEFAULT_PANEL_ORDER;
+  }
+};
+
+const getStoredPanelWidths = () => {
+  try {
+    const storedWidths = JSON.parse(
+      localStorage.getItem("user_panel_widths") ?? "null",
+    );
+    const isValidWidths =
+      Array.isArray(storedWidths) &&
+      storedWidths.length === DEFAULT_PANEL_WIDTHS.length &&
+      storedWidths.every((width) => Number.isFinite(width) && width > 0);
+    return isValidWidths ? storedWidths : DEFAULT_PANEL_WIDTHS;
+  } catch {
+    return DEFAULT_PANEL_WIDTHS;
+  }
+};
+
+function DashBoard() {
   const { userData, isLoading, refreshData } = useUser();
-  const [panelWidths, setPanelWidths] = useState([40, 36, 24]);
+  const [panelOrder, setPanelOrder] = useState(getStoredPanelOrder);
+  const [panelWidths, setPanelWidths] = useState(getStoredPanelWidths);
   const [isResizing, setIsResizing] = useState(false);
+  const [draggedTab, setDraggedTab] = useState(null);
+  const [dragOverTab, setDragOverTab] = useState(null);
   const dragStateRef = useRef(null);
   const panelContainerRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("user_panel_order", JSON.stringify(panelOrder));
+  }, [panelOrder]);
+
+  useEffect(() => {
+    localStorage.setItem("user_panel_widths", JSON.stringify(panelWidths));
+  }, [panelWidths]);
 
   const startResize = (dividerIndex, event) => {
     event.preventDefault();
@@ -72,11 +123,80 @@ function DashBoard({ props }) {
     };
   }, [isResizing]);
 
+  const handleTabDragStart = (panelId, event) => {
+    setDraggedTab(panelId);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", panelId);
+  };
+
+  const handleTabDragOver = (panelId, event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    if (panelId !== draggedTab) {
+      setDragOverTab(panelId);
+    }
+  };
+
+  const handleTabDrop = (targetId, event) => {
+    event.preventDefault();
+    const sourceId = draggedTab;
+
+    if (!sourceId || sourceId === targetId) {
+      setDraggedTab(null);
+      setDragOverTab(null);
+      return;
+    }
+
+    const sourceIndex = panelOrder.indexOf(sourceId);
+    const targetIndex = panelOrder.indexOf(targetId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    setPanelOrder((currentOrder) => {
+      const nextOrder = [...currentOrder];
+      const currentSourceIndex = nextOrder.indexOf(sourceId);
+      const currentTargetIndex = nextOrder.indexOf(targetId);
+      nextOrder[currentSourceIndex] = targetId;
+      nextOrder[currentTargetIndex] = sourceId;
+      return nextOrder;
+    });
+
+    setPanelWidths((currentWidths) => {
+      const nextWidths = [...currentWidths];
+      [nextWidths[sourceIndex], nextWidths[targetIndex]] = [
+        nextWidths[targetIndex],
+        nextWidths[sourceIndex],
+      ];
+      return nextWidths;
+    });
+
+    setDraggedTab(null);
+    setDragOverTab(null);
+  };
+
+  const handleTabDragEnd = () => {
+    setDraggedTab(null);
+    setDragOverTab(null);
+  };
+
+  const renderPanelContent = (panelId) => {
+    if (panelId === "tasks") {
+      return (
+        <TaskList
+          UserTasks={userData?.user_task}
+          CanvasEvent={userData?.canvas_event}
+        />
+      );
+    }
+    if (panelId === "timer") {
+      return <Timer isUserDashboard />;
+    }
+    return <Notepad isUserDashboard />;
+  };
+
   return (
-    <>
-      <div className="dashboard-container">
-        <span>
-          <Header userName={userData?.name}></Header>
+    <div className="dashboard-container">
+      <div className="dashboard-topbar">
+        <Header userName={userData?.name} />
           <button
             className="refresh-button"
             onClick={refreshData}
@@ -84,54 +204,69 @@ function DashBoard({ props }) {
           >
             {isLoading ? "Loading..." : "Refresh User Data"}
           </button>
-        </span>
+      </div>
         <div className="content-container">
-          <Sidebar></Sidebar>
-          <div
-            className={`resizable-panels ${isResizing ? "is-resizing" : ""}`}
-            ref={panelContainerRef}
-          >
+          <Sidebar />
+          <div className="dashboard-workspace">
             <div
-              className="resizable-panel"
-              style={{ flexBasis: `${panelWidths[0]}%` }}
+              className={`resizable-panels ${isResizing ? "is-resizing" : ""}`}
+              ref={panelContainerRef}
             >
-              <TaskList
-                UserTasks={userData?.user_task}
-                CanvasEvent={userData?.canvas_event}
-              ></TaskList>
-            </div>
+              {panelOrder.map((panelId, index) => {
+                const isDragging = draggedTab === panelId;
+                const isDragOver = dragOverTab === panelId;
 
-            <button
-              type="button"
-              className="resize-handle"
-              onMouseDown={(event) => startResize(0, event)}
-              aria-label="Resize task list and timer"
-            />
-
-            <div
-              className="resizable-panel"
-              style={{ flexBasis: `${panelWidths[1]}%` }}
-            >
-              <Timer isUserDashboard />
-            </div>
-
-            <button
-              type="button"
-              className="resize-handle"
-              onMouseDown={(event) => startResize(1, event)}
-              aria-label="Resize timer and notepad"
-            />
-
-            <div
-              className="resizable-panel"
-              style={{ flexBasis: `${panelWidths[2]}%` }}
-            >
-              <Notepad isUserDashboard />
+                return (
+                  <div key={panelId} className="dashboard-panel-wrapper">
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        className="resize-handle"
+                        onMouseDown={(event) => startResize(index - 1, event)}
+                        aria-label="Resize panels"
+                      />
+                    )}
+                    <section
+                      className={`resizable-panel dashboard-panel ${isDragging ? "is-dragging" : ""} ${isDragOver ? "is-drag-over" : ""}`}
+                      style={{
+                        flexBasis:
+                          index === panelOrder.length - 1
+                            ? `calc(${panelWidths[index]}% - ${TOTAL_DIVIDER_WIDTH}px)`
+                            : `${panelWidths[index]}%`,
+                      }}
+                      onDragOver={(event) =>
+                        handleTabDragOver(panelId, event)
+                      }
+                      onDragLeave={() => setDragOverTab(null)}
+                      onDrop={(event) => handleTabDrop(panelId, event)}
+                    >
+                      <div
+                        className="dashboard-panel-tab"
+                        draggable
+                        onDragStart={(event) =>
+                          handleTabDragStart(panelId, event)
+                        }
+                        onDragEnd={handleTabDragEnd}
+                      >
+                        <span
+                          className="dashboard-panel-tab-grip"
+                          aria-hidden="true"
+                        >
+                          ⠿
+                        </span>
+                        <span>{PANEL_LABELS[panelId]}</span>
+                      </div>
+                      <div className="dashboard-panel-body">
+                        {renderPanelContent(panelId)}
+                      </div>
+                    </section>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
-      </div>
-    </>
+    </div>
   );
 }
 

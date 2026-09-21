@@ -1,18 +1,73 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import "./TaskList.css";
 import TaskModal from "./event-modal/task-modal/TaskModal";
 import Event from "../TaskList/event/Event";
 import CanvasModal from "./event-modal/canvas-modal/CanvasModal";
 import { useUser } from "../../context/UserContext/GlobalContext";
+import GuestTaskList from "../../guest-component/task-list/task-list";
 
-function TaskList({ CanvasEvent = [], UserTasks = [] }) {
+function TaskList({ CanvasEvent = [], UserTasks }) {
   const { refreshData } = useUser();
   const [CanvasEvents, setCanvasEvents] = useState(CanvasEvent);
-  const [userTask, setUserTask] = useState([]);
+  const [userTask, setUserTask] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isCanvasModalOpen, setIsCanvasModalOpen] = useState(false);
   const [canvasFilterEndDate, setCanvasFilterEndDate] = useState("");
+  const [canvasHeight, setCanvasHeight] = useState(260);
+  const [isCanvasResizing, setIsCanvasResizing] = useState(false);
+  const taskListRef = useRef(null);
+  const canvasResizeRef = useRef(null);
+  const latestUserTasksRef = useRef([]);
+
+  const getCanvasHeight = useCallback((height) => {
+    const containerHeight = taskListRef.current?.getBoundingClientRect().height ?? 0;
+    const minCanvasHeight = 140;
+    const minTaskListHeight = 180;
+    const maxCanvasHeight = Math.max(
+      minCanvasHeight,
+      containerHeight - minTaskListHeight,
+    );
+
+    return Math.min(Math.max(height, minCanvasHeight), maxCanvasHeight);
+  }, []);
+
+  const startCanvasResize = (event) => {
+    event.preventDefault();
+    canvasResizeRef.current = {
+      startY: event.clientY,
+      startHeight: canvasHeight,
+    };
+    setIsCanvasResizing(true);
+  };
+
+  useEffect(() => {
+    if (!isCanvasResizing) return;
+
+    const onPointerMove = (event) => {
+      const resizeState = canvasResizeRef.current;
+      if (!resizeState) return;
+
+      setCanvasHeight(
+        getCanvasHeight(resizeState.startHeight - (event.clientY - resizeState.startY)),
+      );
+    };
+
+    const stopCanvasResize = () => {
+      canvasResizeRef.current = null;
+      setIsCanvasResizing(false);
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", stopCanvasResize);
+    window.addEventListener("pointercancel", stopCanvasResize);
+
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", stopCanvasResize);
+      window.removeEventListener("pointercancel", stopCanvasResize);
+    };
+  }, [isCanvasResizing, getCanvasHeight]);
 
   const filteredCanvasEvents = useMemo(() => {
     if (!canvasFilterEndDate) {
@@ -58,21 +113,28 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
       );
 
       if (response.ok) {
-        const updatedTask = userTask.filter((task) => task.id !== id);
-        setUserTask(updatedTask);
+        const updatedTasks = (latestUserTasksRef.current ?? []).filter(
+          (task) => task.id !== id,
+        );
+        latestUserTasksRef.current = updatedTasks;
+        setUserTask(updatedTasks);
         console.log("delete task");
+        return true;
       } else {
         const errorText = await response.text();
         console.log("Failed to delete task:", errorText);
+        return false;
       }
     } catch (error) {
       console.error("Network error while deleting task:", error);
+      return false;
     }
   };
 
   const handleSyncTaskArray = async (tasksToSync = userTask) => {
     console.log("from function");
     const token = localStorage.getItem("token");
+    latestUserTasksRef.current = tasksToSync ?? [];
 
     try {
       const response = await fetch(
@@ -84,7 +146,11 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            userTask: tasksToSync,
+            userTask: tasksToSync.map((task) => ({
+              ...task,
+              // Preserve compatibility with the existing required database column.
+              summary: task.summary ?? task.text,
+            })),
           }),
         },
       );
@@ -92,23 +158,103 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
       if (response.ok) {
         const message = await response.text();
         console.log("Success:", message);
+        return true;
       } else {
         const errorText = await response.text();
         console.log("Failed to save tasks:", errorText);
+        return false;
       }
     } catch (error) {
       console.error("Network error while saving tasks:", error);
+      return false;
     }
   };
 
+  const handleDeleteCanvasEvent = async (eventId) => {
+    if (eventId == null) {
+      console.error("Cannot delete a Canvas event without an id");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/canvas-events/${encodeURIComponent(eventId)}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.error("Failed to delete Canvas event:", await response.text());
+        return;
+      }
+
+      setCanvasEvents((events) =>
+        events.filter((event) => String(event.id) !== String(eventId)),
+      );
+      await refreshData();
+    } catch (error) {
+      console.error("Network error while deleting Canvas event:", error);
+    }
+  };
+
+  const handleAddCanvasEventToTaskList = async (canvasEvent) => {
+    const currentTasks = latestUserTasksRef.current ?? [];
+    let taskId = Date.now();
+    while (currentTasks.some((task) => Number(task.id) === taskId)) {
+      taskId += 1;
+    }
+
+    const eventDate = canvasEvent.dueDate ? new Date(canvasEvent.dueDate) : null;
+    const dueDate =
+      eventDate && !Number.isNaN(eventDate.getTime())
+        ? `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, "0")}-${String(eventDate.getDate()).padStart(2, "0")}`
+        : null;
+    const newTask = {
+      id: taskId,
+      text: canvasEvent.summary ?? "Canvas event",
+      summary: canvasEvent.summary ?? "Canvas event",
+      description: canvasEvent.description ?? "",
+      dueDate,
+      completed: false,
+      type: "checkbox",
+      priority: null,
+      completedUnits: 0,
+      totalUnits: 10,
+      unitLabel: "units",
+      subtasks: [],
+    };
+    const updatedTasks = [...currentTasks, newTask];
+
+    latestUserTasksRef.current = updatedTasks;
+    const saved = await handleSyncTaskArray(updatedTasks);
+    if (!saved) {
+      latestUserTasksRef.current = currentTasks;
+      return;
+    }
+
+    setUserTask(updatedTasks);
+  };
+
   useEffect(() => {
-    setUserTask(UserTasks ?? []);
+    if (UserTasks !== undefined) {
+      const tasks = UserTasks ?? [];
+      latestUserTasksRef.current = tasks;
+      setUserTask(tasks);
+    }
     setCanvasEvents(CanvasEvent ?? []);
   }, [UserTasks, CanvasEvent]);
   
   return (
     <>
-      <div className="container">
+      <div
+        className={`container${isCanvasResizing ? " is-canvas-resizing" : ""}`}
+        ref={taskListRef}
+      >
         <TaskModal
           isOpen={isModalOpen}
           onClose={() => {
@@ -116,6 +262,15 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
           }}
           onSave={handleAddTask}
         ></TaskModal>
+
+        {userTask !== null && (
+          <GuestTaskList
+            hideHeader
+            remoteTasks={userTask}
+            onTasksChange={handleSyncTaskArray}
+            onTaskDelete={handleDeleteTask}
+          />
+        )}
 
         <div className="user-task">
           <span className="user-task-header">
@@ -167,7 +322,7 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
               </button>
             </span>
           </span>
-          {userTask.map((task, index) => (
+          {(userTask ?? []).map((task) => (
             <Event
               onDelete={handleDeleteTask}
               key={task.id}
@@ -178,7 +333,24 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
             ></Event>
           ))}
         </div>
-        <div className="canvas-task">
+        <div
+          className="canvas-resize-handle"
+          role="separator"
+          aria-label="Resize Canvas Events section"
+          aria-orientation="horizontal"
+          tabIndex={0}
+          onPointerDown={startCanvasResize}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowUp") {
+              event.preventDefault();
+              setCanvasHeight((height) => getCanvasHeight(height + 20));
+            } else if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setCanvasHeight((height) => getCanvasHeight(height - 20));
+            }
+          }}
+        />
+        <div className="canvas-task" style={{ height: `${canvasHeight}px` }}>
           <CanvasModal
             isOpen={isCanvasModalOpen}
             onClose={() => setIsCanvasModalOpen(false)}
@@ -231,6 +403,8 @@ function TaskList({ CanvasEvent = [], UserTasks = [] }) {
                   summary={ev.summary}
                   description={ev.description}
                   dueDate={ev.dueDate}
+                  onDelete={handleDeleteCanvasEvent}
+                  onAddToTaskList={() => handleAddCanvasEventToTaskList(ev)}
                 />
               ))
             )}

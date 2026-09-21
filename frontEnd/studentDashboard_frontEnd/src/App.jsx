@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import Login from "./components/auth/login/login";
 import DashBoard from "./components/dashboard/dashboard";
@@ -10,6 +9,7 @@ import { AuthProvider } from "./components/context/AuthContext/AuthContext";
 import { ProtectedRoute } from "./components/protected-route/ProtectedRoute";
 import Register from "./components/auth/register/register";
 import { UserProvider } from "./components/context/UserContext/GlobalContext";
+import UserArchive from "./components/user-component/archive/UserArchive";
 
 function App() {
   return (
@@ -32,6 +32,14 @@ function App() {
               <Route path="/guest-dashboard" element={<GuestDashboard />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/archive" element={<Archive />} />
+              <Route
+                path="/dashboard/archive"
+                element={
+                  <ProtectedRoute>
+                    <UserArchive />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </BrowserRouter>
         </UserProvider>

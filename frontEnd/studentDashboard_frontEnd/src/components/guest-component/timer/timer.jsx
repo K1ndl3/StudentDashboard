@@ -3,6 +3,7 @@ import alertSound from "../../../assets/alert-444816.mp3"
 import "./timer.css"
 
 const THEME = "rgb(100, 60, 255)"
+const TIMER_STATE_KEY = "pom_timer_state"
 
 function formatTime(sec) {
     const m = Math.floor(sec / 60).toString().padStart(2, "0")
@@ -10,24 +11,50 @@ function formatTime(sec) {
     return `${m}:${s}`
 }
 
+function loadTimerState() {
+    const workMin = Number(localStorage.getItem("pom_work")) || 25
+    const breakMin = Number(localStorage.getItem("pom_break")) || 5
+    const cycles = Number(localStorage.getItem("pom_cycles")) || 0
+
+    try {
+        const saved = JSON.parse(localStorage.getItem(TIMER_STATE_KEY))
+        if (!saved) throw new Error("No saved timer")
+
+        const mode = saved.mode === "break" ? "break" : "work"
+        const secondsLeft = Number(saved.secondsLeft)
+        const targetTime = Number(saved.targetTime)
+        const isRunning = Boolean(saved.isRunning) && Number.isFinite(targetTime)
+
+        return {
+            workMin: Number(saved.workMin) || workMin,
+            breakMin: Number(saved.breakMin) || breakMin,
+            cycles: Number(saved.cycles) || cycles,
+            mode,
+            isRunning,
+            secondsLeft: isRunning
+                ? Math.max(0, Math.ceil((targetTime - Date.now()) / 1000))
+                : (Number.isFinite(secondsLeft) ? secondsLeft : workMin * 60),
+            targetTime: isRunning ? targetTime : null,
+        }
+    } catch {
+        return { workMin, breakMin, cycles, mode: "work", isRunning: false, secondsLeft: workMin * 60, targetTime: null }
+    }
+}
+
 function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
     const ringColor = accentColor || THEME;
-    const [workMin, setWorkMin] = useState(() => Number(localStorage.getItem("pom_work")) || 25)
-    const [breakMin, setBreakMin] = useState(() => Number(localStorage.getItem("pom_break")) || 5)
-    const [mode, setMode] = useState("work")
-    const [isRunning, setIsRunning] = useState(false)
-    const [secondsLeft, setSecondsLeft] = useState(() => (Number(localStorage.getItem("pom_work")) || 25) * 60)
-    const [cycles, setCycles] = useState(() => Number(localStorage.getItem("pom_cycles")) || 0)
+    const [savedTimer] = useState(loadTimerState)
+    const [workMin, setWorkMin] = useState(savedTimer.workMin)
+    const [breakMin, setBreakMin] = useState(savedTimer.breakMin)
+    const [mode, setMode] = useState(savedTimer.mode)
+    const [isRunning, setIsRunning] = useState(savedTimer.isRunning)
+    const [secondsLeft, setSecondsLeft] = useState(savedTimer.secondsLeft)
+    const [cycles, setCycles] = useState(savedTimer.cycles)
     const [showSettings, setShowSettings] = useState(false)
     const [audioCount, setAudioCount] = useState(2)
     const audioRef = useRef(new Audio(alertSound))
-    // idk maybe refactor later
-    const [onBreak, setOnBreak] = useState(false)
-    const [timeRemaining, setTimeRemaining] = useState()
-    const [breakTime, setBreakTime] = useState()
-
     const intervalRef = useRef(null)
-    const targetRef = useRef(null)
+    const targetRef = useRef(savedTimer.targetTime)
 
     const playAlert = async () => {
         const audio = audioRef.current
@@ -41,10 +68,12 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
     useEffect(() => { localStorage.setItem("pom_work", workMin) }, [workMin])
     useEffect(() => { localStorage.setItem("pom_break", breakMin) }, [breakMin])
     useEffect(() => { localStorage.setItem("pom_cycles", cycles) }, [cycles])
-
     useEffect(() => {
-        setSecondsLeft(mode === "work" ? workMin * 60 : breakMin * 60)
-    }, [workMin, breakMin, mode])
+        localStorage.setItem(TIMER_STATE_KEY, JSON.stringify({
+            workMin, breakMin, mode, isRunning, secondsLeft, cycles,
+            targetTime: isRunning ? targetRef.current : null,
+        }))
+    }, [workMin, breakMin, mode, isRunning, secondsLeft, cycles])
 
     useEffect(() => { // driver function for the timer using epoch diffs
         if (isRunning) {
@@ -91,23 +120,12 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
     const toggle = () => {
         // if currently running -> pause: save remaining seconds to localStorage and stop the timer
         if (isRunning) {
-            try { localStorage.setItem('pom_paused_seconds', String(secondsLeft)) } catch (e) {}
             targetRef.current = null
             setIsRunning(false)
             return
         }
 
         // resuming: prefer any paused time from localStorage (replace secondsLeft), then start
-        const stored = Number(localStorage.getItem('pom_paused_seconds'))
-        if (!Number.isNaN(stored) && stored > 0) {
-            setSecondsLeft(stored)
-            targetRef.current = Date.now() + stored * 1000
-            try { localStorage.removeItem('pom_paused_seconds') } catch (e) {}
-            setIsRunning(true)
-            return
-        }
-
-        // normal start when no paused value present
         targetRef.current = Date.now() + (secondsLeft * 1000)
         setIsRunning(true)
     }
@@ -115,7 +133,6 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
     const reset = () => { 
         setIsRunning(false); 
         targetRef.current = null; 
-        try { localStorage.removeItem('pom_paused_seconds') } catch (e) {}
         setSecondsLeft(workMin * 60); 
         setMode("work"); 
         setCycles(0) 
@@ -126,15 +143,11 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
         const bNum = Math.max(1, Math.floor(Number(b) || 5))
         setWorkMin(wNum)
         setBreakMin(bNum)
+        const nextSeconds = (mode === "work" ? wNum : bNum) * 60
+        setSecondsLeft(nextSeconds)
+        if (isRunning) targetRef.current = Date.now() + nextSeconds * 1000
         setShowSettings(false)
     }
-
-    // when work/break/min or mode change while running, reset the target so timing stays accurate
-    useEffect(() => {
-        if (isRunning && targetRef.current) {
-            targetRef.current = Date.now() + (secondsLeft * 1000)
-        }
-    }, [workMin, breakMin, mode])
 
     const showSettingsPanel = isUserDashboard || showSettings
 

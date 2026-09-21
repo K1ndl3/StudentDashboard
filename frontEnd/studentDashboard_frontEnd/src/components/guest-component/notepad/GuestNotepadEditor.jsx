@@ -33,11 +33,12 @@ const LEGACY_KEY = "userNote";
 const MARKDOWN_TRANSFORMERS = [UNORDERED_LIST, ORDERED_LIST];
 
 /* ─── Migrate / load persisted state ──────────────────────────── */
-function LoadStatePlugin() {
+function LoadStatePlugin({ enabled }) {
     const [editor] = useLexicalComposerContext();
     const loaded = useRef(false);
 
     useEffect(() => {
+        if (!enabled) return;
         if (loaded.current) return;
         loaded.current = true;
 
@@ -65,7 +66,33 @@ function LoadStatePlugin() {
             });
             localStorage.removeItem(LEGACY_KEY);
         }
-    }, [editor]);
+    }, [editor, enabled]);
+
+    return null;
+}
+
+function replaceEditorText(editor, content) {
+    editor.update(() => {
+        const root = $getRoot();
+        root.clear();
+        const lines = (content ?? "").split("\n");
+        lines.forEach((line) => {
+            const paragraph = $createParagraphNode();
+            if (line) paragraph.append($createTextNode(line));
+            root.append(paragraph);
+        });
+    });
+}
+
+function ExternalContentPlugin({ content }) {
+    const [editor] = useLexicalComposerContext();
+    const previousContent = useRef(Symbol("initial"));
+
+    useEffect(() => {
+        if (content === undefined || previousContent.current === content) return;
+        previousContent.current = content;
+        replaceEditorText(editor, content);
+    }, [content, editor]);
 
     return null;
 }
@@ -111,6 +138,9 @@ function EditorRefPlugin({ editorRef }) {
                     empty = $getRoot().getTextContent().trim() === "";
                 });
                 return empty;
+            },
+            setPlainText(content) {
+                replaceEditorText(editor, content);
             },
         };
     }, [editor, editorRef]);
@@ -184,9 +214,14 @@ function Toolbar() {
 }
 
 /* ─── Main export ──────────────────────────────────────────────── */
-export default function GuestNotepadEditor({ onTextChange, editorRef }) {
+export default function GuestNotepadEditor({
+    onTextChange,
+    editorRef,
+    initialText,
+    persistLocally = true,
+}) {
     const initialConfig = {
-        namespace: "GuestNotepad",
+        namespace: persistLocally ? "GuestNotepad" : "UserNotepad",
         onError: (err) => console.error("[GuestNotepad]", err),
         theme: {
             text: {
@@ -230,11 +265,14 @@ export default function GuestNotepadEditor({ onTextChange, editorRef }) {
             <TabIndentationPlugin maxIndent={7} />
             <TabIndentPlugin />
             <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
-            <LoadStatePlugin />
+            <LoadStatePlugin enabled={persistLocally} />
+            <ExternalContentPlugin content={initialText} />
             <OnChangePlugin
                 onChange={(editorState) => {
-                    const json = JSON.stringify(editorState.toJSON());
-                    localStorage.setItem(STORAGE_KEY, json);
+                    if (persistLocally) {
+                        const json = JSON.stringify(editorState.toJSON());
+                        localStorage.setItem(STORAGE_KEY, json);
+                    }
                     editorState.read(() => {
                         if (onTextChange) onTextChange($getRoot().getTextContent());
                     });

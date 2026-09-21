@@ -32,10 +32,11 @@ function Register() {
                 alert("Registration successful!");
                 navigate("/login")
             } else if (response.status === 400) {
-            alert("Cannot register. Check your fields")
-                setErrors(data); 
+                alert("Cannot register. Check your fields.")
             } else if (response.status === 409) {
                 alert(data.message || "User already exists!");
+            } else {
+                alert("Registration failed. Please try again.");
             }
         } catch (error) {
             console.error("Connection failed:", error);
@@ -48,7 +49,7 @@ function Register() {
             <input type="text"
                    placeholder="Enter username"
                    onChange={(e) => setUsername(e.target.value)} />
-            <input type="text"
+            <input type="password"
                    placeholder="Enter password"
                    onChange={(e) => setPassword(e.target.value)} />
             <input type="text"

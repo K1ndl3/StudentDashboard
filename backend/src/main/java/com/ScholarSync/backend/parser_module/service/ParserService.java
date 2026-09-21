@@ -13,6 +13,10 @@ public interface ParserService {
 
     public List<CanvasEvent> overideEvents(String calendarURL, User user);
 
+    public List<CanvasEvent> refreshCanvasEvents(User user);
+
+    public void deleteCanvasEvent(Long eventId, User user);
+
     //public List<CanvasEvent> fetchFromDb(User user);
 
 }

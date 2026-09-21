@@ -4,13 +4,14 @@ import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.DtEnd;
 
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,31 +50,48 @@ public class ParserImpl implements Parser{
                     .map(Property::getValue)
                     .orElse("");
 
-            //EXTRACT END DATE (DTEND)
-            Optional<DtEnd<Temporal>> dtEndOpt = vEvent.getEndDate();
+            String externalId = vEvent.getUid()
+                    .map(Property::getValue)
+                    .orElse(null);
 
-            LocalDateTime endDate = null;
-            if (dtEndOpt.isPresent()) {
-                // 2. Get the actual Temporal object (could be Instant, LocalDate, etc.)
-                Temporal temporal = dtEndOpt.get().getDate();
-                
-                // 3. Convert to LocalDateTime
-                if (temporal instanceof Instant instant) {
-                    // If it has a timestamp (most Canvas events do)
-                    endDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-                } else if (temporal instanceof LocalDate localDate) {
-                    // If it's an "All Day" event with no specific time
-                    endDate = localDate.atStartOfDay();
-                }
-            }   
+            // Canvas assignments normally expose their due date as DTSTART and
+            // do not include DTEND. Prefer DTEND for ranged events, then fall
+            // back to DTSTART so assignments are not imported with a null date.
+            var endProperty = vEvent.getDateTimeEnd();
+            var startProperty = vEvent.getDateTimeStart();
+            Temporal dueDate = endProperty != null
+                ? endProperty.getDate()
+                : startProperty != null ? startProperty.getDate() : null;
+
+            LocalDateTime endDate = toLocalDateTime(dueDate);
             CanvasEvent newEvent = new CanvasEvent(
                 endDate,
                 description,
                 summary
             );
+            newEvent.setExternalId(externalId);
             listEvent.add(newEvent);
         }
         return listEvent;
+    }
+
+    private LocalDateTime toLocalDateTime(Temporal temporal) {
+        if (temporal instanceof Instant instant) {
+            return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        }
+        if (temporal instanceof LocalDate localDate) {
+            return localDate.atStartOfDay();
+        }
+        if (temporal instanceof LocalDateTime localDateTime) {
+            return localDateTime;
+        }
+        if (temporal instanceof ZonedDateTime zonedDateTime) {
+            return zonedDateTime.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+        }
+        if (temporal instanceof OffsetDateTime offsetDateTime) {
+            return offsetDateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+        }
+        return null;
     }
 
 }

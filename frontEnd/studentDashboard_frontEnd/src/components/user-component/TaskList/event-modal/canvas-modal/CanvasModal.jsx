@@ -19,7 +19,7 @@ function CanvasModal({ isOpen, onClose, onSyncComplete }) {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        "http://localhost:8080/api/canvas-events/syncAndOverride",
+        "http://localhost:8080/api/canvas-events/sync-and-override",
         {
           method: "POST",
           headers: {
@@ -31,7 +31,11 @@ function CanvasModal({ isOpen, onClose, onSyncComplete }) {
       );
 
       if (!response.ok) {
-        setError("Sync failed. Check the URL and try again.");
+        setError(
+          response.status === 422
+            ? "No events could be imported from this calendar."
+            : "Sync failed. Check the URL and try again.",
+        );
         return;
       }
 
@@ -46,8 +50,43 @@ function CanvasModal({ isOpen, onClose, onSyncComplete }) {
       if (onSyncComplete) await onSyncComplete();
       onClose();
       setCalendarUrl("");
-    } catch {
-      setError("Network error.");
+    } catch (networkError) {
+      console.error("Canvas calendar sync failed:", networkError);
+      setError("Cannot reach the server. Make sure the backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:8080/api/canvas-events/refresh",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!response.ok && response.status !== 204) {
+        setError(
+          response.status === 409
+            ? "Enter a calendar link before refreshing."
+            : "Refresh failed. Try again.",
+        );
+        return;
+      }
+
+      if (onSyncComplete) await onSyncComplete();
+      onClose();
+    } catch (networkError) {
+      console.error("Canvas calendar refresh failed:", networkError);
+      setError("Cannot reach the server. Make sure the backend is running.");
     } finally {
       setLoading(false);
     }
@@ -59,8 +98,9 @@ function CanvasModal({ isOpen, onClose, onSyncComplete }) {
         <span className="input-container">
           <input
             className="input-link"
-            type="text"
+            type="url"
             placeholder="Enter Calendar Link"
+            aria-label="Canvas calendar link"
             value={calendarUrl}
             onChange={(e) => setCalendarUrl(e.target.value)}
             onKeyDown={(e) => {
@@ -93,6 +133,30 @@ function CanvasModal({ isOpen, onClose, onSyncComplete }) {
               />
             </svg>
             Enter
+          </button>
+          <button
+            type="button"
+            className="input-refresh"
+            onClick={handleRefresh}
+            disabled={loading}
+            aria-busy={loading}
+            title="Refresh saved Canvas calendar"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.023 9.348h4.992V4.356m-.97 11.679A9 9 0 1 1 20.49 9"
+              />
+            </svg>
+            Refresh
           </button>
           <button
             type="button"

@@ -2,6 +2,7 @@ package com.ScholarSync.backend;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -27,6 +28,10 @@ class BackendApplicationTests {
         }
         assertNotNull(events);
         assertFalse(events.isEmpty(), "Should have found at least one assignment!");
+        assertTrue(
+            events.stream().allMatch(event -> event.getDueDate() != null),
+            "Every Canvas assignment should have a due date"
+        );
     }
 
 }

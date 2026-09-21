@@ -1,90 +1,132 @@
 .canvas-modal-wrapper {
+    --canvas-control-height: 2.5rem;
+    --canvas-control-gap: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin: 12px 14px;
+    gap: var(--canvas-control-gap);
+    padding: 0.5rem 0.75rem;
 }
 
 .canvas-modal-error {
-    margin: 0 14px 8px;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--obs-border);
+    border-radius: var(--obs-radius);
+    background: var(--obs-bg-raised);
     font-size: 0.875rem;
-    color: #f87171;
+    color: var(--obs-text-primary);
 }
 
 .canvas-modal-container {
     display: flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--canvas-control-gap);
+    width: 100%;
+    box-sizing: border-box;
     margin: 0;
-    padding: 12px;
-    border: 1px solid rgba(100, 60, 255, 0.18);
-    border-radius: 12px;
-    background: rgba(100, 60, 255, 0.06);
+    overflow-x: auto;
 }
 
 .canvas-modal-container .input-link {
-    height: 36px;
-    width: 260px;
-    padding: 0 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(100, 60, 255, 0.28);
-    background: #16161b;
-    color: #989ba1;
+    width: 100%;
+    min-width: 12rem;
+    height: var(--canvas-control-height);
+    box-sizing: border-box;
+    padding: 0 0.75rem;
+    border: 1px solid var(--obs-border);
+    border-radius: var(--obs-radius);
+    background: var(--obs-bg-input);
+    color: var(--obs-text-primary);
     outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .canvas-modal-container .input-link::placeholder {
-    color: #969ca5;
+    color: var(--obs-text-secondary);
 }
 
 .canvas-modal-container .input-link:focus {
-    border-color: rgba(100, 60, 255, 0.6);
-    box-shadow: 0 0 0 2px rgba(100, 60, 255, 0.12);
+    border-color: var(--obs-accent);
+    box-shadow: 0 0 0 2px var(--obs-border-subtle);
 }
 
-.canvas-modal-container .input-close {
-    border-radius: 100px;
-    height: 42px;
-    width: 42px;
-    border: 1px solid rgba(100, 60, 255, 0.3);
-    background: rgba(100, 60, 255, 0.08);
-    color: rgba(100, 60, 255, 0.95);
+.canvas-modal-container .input-send,
+.canvas-modal-container .input-close,
+.canvas-modal-container .input-refresh {
+    width: 100%;
+    height: var(--canvas-control-height);
+    padding: 0 0.75rem;
+    border: 1px solid var(--obs-border);
+    border-radius: var(--obs-radius);
+    background: var(--obs-bg-raised);
+    color: var(--obs-text-secondary);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: var(--canvas-control-gap);
     cursor: pointer;
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+}
+
+.canvas-modal-container .input-send {
+    border-color: var(--obs-accent);
+    color: var(--obs-text-primary);
+}
+
+.canvas-modal-container .input-send:hover:not(:disabled),
+.canvas-modal-container .input-refresh:hover:not(:disabled),
+.canvas-modal-container .input-close:hover:not(:disabled) {
+    border-color: var(--obs-accent);
+    background: var(--obs-bg-hover);
+    color: var(--obs-text-primary);
+}
+
+.canvas-modal-container .input-send:active:not(:disabled),
+.canvas-modal-container .input-refresh:active:not(:disabled),
+.canvas-modal-container .input-close:active:not(:disabled) {
+    background: var(--obs-bg-surface);
+}
+
+.canvas-modal-container .input-send:focus-visible,
+.canvas-modal-container .input-refresh:focus-visible,
+.canvas-modal-container .input-close:focus-visible {
+    outline: 2px solid var(--obs-accent);
+    outline-offset: 2px;
 }
 
 .canvas-modal-container .input-container {
+    flex: 1 1 auto;
+    min-width: 12rem;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    height: auto;
     align-items: center;
-    gap: 10px;
 }
 
 .canvas-modal-container .input-container-button {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
+    flex: 0 0 auto;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    align-items: center;
+    gap: var(--canvas-control-gap);
 }
 
-.canvas-modal-container .input-container-button .input-send {
-    border-radius: 100px;
-    height: 42px;
-    width: 42px;
-    border: 1px solid rgba(100, 60, 255, 0.3);
-    background: rgba(100, 60, 255, 0.08);
-    color: rgba(100, 60, 255, 0.95);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+.canvas-modal-container .size-6 {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
 }
 
 .canvas-modal-container .input-send:disabled,
+.canvas-modal-container .input-refresh:disabled,
 .canvas-modal-container .input-close:disabled,
 .canvas-modal-container .input-link:disabled {
     opacity: 0.55;

@@ -28,18 +28,23 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .filter-group {
     display: flex;
     gap: 4px;
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
 }
 
 .filter-btn {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 32px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 6px 8px;
     border-radius: var(--obs-radius, 6px);
     border: 1px solid var(--obs-border-subtle, #2f2f2f);
@@ -71,6 +76,8 @@
 }
 
 .sort-select {
+    height: 32px;
+    box-sizing: border-box;
     padding: 6px 8px;
     border-radius: var(--obs-radius, 6px);
     border: 1px solid var(--obs-border, #3a3a3a);
@@ -86,6 +93,8 @@
 }
 
 .add-task-toggle-btn {
+    height: 32px;
+    box-sizing: border-box;
     padding: 7px 12px;
     border-radius: var(--obs-radius, 6px);
     border: 1px solid rgba(100, 60, 255, 0.4);
@@ -268,6 +277,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    min-height: 0;
     overflow-y: auto;
     flex: 1;
     display: flex;
@@ -283,6 +293,7 @@
 }
 
 .task-empty-state {
+    flex: 0 0 auto;
     text-align: center;
     color: var(--obs-text-muted, #666);
     font-size: 13px;
@@ -291,6 +302,8 @@
 
 /* ── Task item ───────────────────────────────────────────────────── */
 .task-item {
+    /* Never shrink inside the scrolling list, otherwise expanded details clip. */
+    flex: 0 0 auto;
     border-radius: var(--obs-radius, 6px);
     border: 1px solid var(--obs-border-subtle, #2f2f2f);
     background: rgba(255, 255, 255, 0.02);
@@ -306,6 +319,46 @@
     border-color: rgba(100, 60, 255, 0.3);
 }
 
+.task-item.progress-selected {
+    border-color: rgba(150, 120, 255, 0.9);
+    box-shadow: 0 0 0 2px rgba(100, 60, 255, 0.18);
+}
+
+.task-item[draggable="true"] {
+    cursor: grab;
+}
+
+.task-item[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.task-item.drop-before,
+.task-item.drop-after {
+    position: relative;
+}
+
+.task-item.drop-before::before,
+.task-item.drop-after::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 3px;
+    background: #a88cff;
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(150, 120, 255, 0.95);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.task-item.drop-before::before {
+    top: 0;
+}
+
+.task-item.drop-after::after {
+    bottom: 0;
+}
+
 /* ── Task row (compact header) ───────────────────────────────────── */
 .task-row {
     display: flex;
@@ -313,6 +366,24 @@
     gap: 6px;
     padding: 8px 10px;
     min-height: 40px;
+}
+
+.progress-task-row {
+    cursor: pointer;
+}
+
+.progress-task-row:focus-visible {
+    outline: 2px solid rgba(150, 120, 255, 0.9);
+    outline-offset: -2px;
+}
+
+.task-drag-handle {
+    color: var(--obs-text-muted, #666);
+    cursor: grab;
+    font-size: 15px;
+    letter-spacing: -2px;
+    line-height: 1;
+    user-select: none;
 }
 
 .expand-btn {
