@@ -10,12 +10,14 @@ import { ProtectedRoute } from "./components/protected-route/ProtectedRoute";
 import Register from "./components/auth/register/register";
 import { UserProvider } from "./components/context/UserContext/GlobalContext";
 import UserArchive from "./components/user-component/archive/UserArchive";
+import DailyFocusSnapshot from "./components/guest-component/timer/DailyFocusSnapshot";
 
 function App() {
   return (
     <>
       <AuthProvider>
         <UserProvider>
+          <DailyFocusSnapshot />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Navigate to="/login" />} />

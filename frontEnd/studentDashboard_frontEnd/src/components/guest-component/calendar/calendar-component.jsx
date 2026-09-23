@@ -1,7 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import "./calendar-component.css";
 import Day from "./day.jsx";
 import DatePopup from "./date-popup.jsx";
+import DailyFocusModal from "./DailyFocusModal.jsx";
+import {
+    DAILY_SNAPSHOT_EVENT,
+    loadDailySnapshots,
+} from "../timer/timerStorage.js";
 
 /* ─── Constants ──────────────────────────────────────────────────── */
 const MONTH_NAMES = [
@@ -35,7 +40,7 @@ function getEventsForDate(iso) {
 
 // refreshKey is accepted so callers can force a re-read by passing a changing value
 // eslint-disable-next-line no-unused-vars
-function buildCells(viewYear, viewMonth, _refreshKey) {
+function buildCells(viewYear, viewMonth, snapshots, _refreshKey) {
     const firstDay = new Date(viewYear, viewMonth, 1);
     // Monday = 0 … Sunday = 6
     const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
@@ -53,13 +58,13 @@ function buildCells(viewYear, viewMonth, _refreshKey) {
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
         const day = daysInPrev - i;
         const iso = isoDate(prevYear, prevMonth, day);
-        cells.push({ day, iso, isCurrentMonth: false, events: getEventsForDate(iso) });
+        cells.push({ day, iso, isCurrentMonth: false, events: getEventsForDate(iso), snapshot: snapshots[iso] });
     }
 
     // Current month
     for (let day = 1; day <= daysInCurrent; day++) {
         const iso = isoDate(viewYear, viewMonth, day);
-        cells.push({ day, iso, isCurrentMonth: true, events: getEventsForDate(iso) });
+        cells.push({ day, iso, isCurrentMonth: true, events: getEventsForDate(iso), snapshot: snapshots[iso] });
     }
 
     // Trailing cells to fill complete weeks
@@ -67,7 +72,7 @@ function buildCells(viewYear, viewMonth, _refreshKey) {
     let nextDay = 1;
     while (cells.length < totalCells) {
         const iso = isoDate(nextYear, nextMonth, nextDay);
-        cells.push({ day: nextDay++, iso, isCurrentMonth: false, events: getEventsForDate(iso) });
+        cells.push({ day: nextDay++, iso, isCurrentMonth: false, events: getEventsForDate(iso), snapshot: snapshots[iso] });
     }
 
     return cells;
@@ -80,12 +85,19 @@ function CalendarComponent() {
     const [viewYear, setViewYear]     = useState(now.getFullYear());
     const [viewMonth, setViewMonth]   = useState(now.getMonth());
     const [selectedDate, setSelected] = useState(null);
+    const [activeSnapshot, setActiveSnapshot] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0); // bumped on popup close
 
     const today = todayISO();
 
     // Pass refreshKey to buildCells so state changes trigger a localStorage re-read
-    const cells = buildCells(viewYear, viewMonth, refreshKey);
+    const cells = buildCells(viewYear, viewMonth, loadDailySnapshots(), refreshKey);
+
+    useEffect(() => {
+        const refreshSnapshots = () => setRefreshKey(key => key + 1)
+        window.addEventListener(DAILY_SNAPSHOT_EVENT, refreshSnapshots)
+        return () => window.removeEventListener(DAILY_SNAPSHOT_EVENT, refreshSnapshots)
+    }, [])
 
     /* ── Navigation ── */
     const goToPrev = useCallback(() => {
@@ -170,10 +182,12 @@ function CalendarComponent() {
                             day={cell.day}
                             isoDate={cell.iso}
                             events={cell.events}
+                            snapshot={cell.snapshot}
                             isCurrentMonth={cell.isCurrentMonth}
                             isToday={cell.iso === today}
                             isSelected={cell.iso === selectedDate}
                             onClick={handleDayClick}
+                            onSnapshotClick={setActiveSnapshot}
                         />
                     ))}
                 </div>
@@ -184,6 +198,12 @@ function CalendarComponent() {
                 <DatePopup
                     isoDate={selectedDate}
                     onClose={handlePopupClose}
+                />
+            )}
+            {activeSnapshot && (
+                <DailyFocusModal
+                    snapshot={activeSnapshot}
+                    onClose={() => setActiveSnapshot(null)}
                 />
             )}
         </div>

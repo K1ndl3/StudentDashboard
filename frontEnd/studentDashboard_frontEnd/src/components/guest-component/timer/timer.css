@@ -1,5 +1,15 @@
 
 .timer-container{
+    --timer-bg: #1e1e1e;
+    --timer-raised: #2f2f2f;
+    --timer-hover: #363636;
+    --timer-border: #3a3a3a;
+    --timer-border-subtle: #2f2f2f;
+    --timer-text: #dcddde;
+    --timer-text-secondary: #999;
+    --timer-text-muted: #666;
+    --timer-accent: rgb(100, 60, 255);
+    --timer-radius: 6px;
     border-radius: 20px;
     background-color: rgba(100, 60, 255, 0.04);
     border: 1px solid rgba(100, 60, 255, 0.12);
@@ -22,15 +32,39 @@
     flex-direction: column;
 }
 
-.timer-header{ display:flex; align-items:center; justify-content:space-between; }
+.timer-header{ display:flex; align-items:center; justify-content:space-between; gap: 8px; }
 .timer-header h2{ margin:0; color: rgb(100, 60, 255);
     font-size: 30px;
     font-weight: 500; }
-.icon-button{ background: transparent; border: none; cursor:pointer }
+.timer-controls { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.icon-button{ background: transparent; border: none; color: var(--timer-text-secondary); cursor:pointer; padding: 6px; border-radius: var(--timer-radius); }
+.icon-button svg { display: block; width: 20px; height: 20px; }
+.icon-button:hover { color: var(--timer-text); background: var(--timer-hover); }
+.icon-button:focus-visible,
+.view-toggle-button:focus-visible,
+.category-add-toggle:focus-visible,
+.category-picker select:focus-visible,
+.category-form input:focus-visible,
+.timer-container button:focus-visible {
+    outline: 2px solid var(--timer-accent);
+    outline-offset: 2px;
+}
 
-.timer-body{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.view-toggle-button {
+    padding: 6px 9px;
+    border: 1px solid var(--timer-border);
+    border-radius: var(--timer-radius);
+    background: var(--timer-raised);
+    color: var(--timer-text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+}
+.view-toggle-button:hover { background: var(--timer-hover); color: var(--timer-text); }
+
+.timer-body{ display:flex; flex-direction:column; align-items:center; gap:10px; min-height: 0; overflow-y: auto; }
 .progress-wrap{ position:relative; width:180px; height:180px; }
 .progress-circle{ transform: rotate(-90deg); }
+.progress-track { stroke: rgba(255,255,255,0.08); }
 .timer-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; color: #eaeaff }
 .mode-label{ font-size:14px; color: rgba(230,230,255,0.9) }
 .time-display{ font-size:28px; font-weight:700; margin-top:6px }
@@ -66,7 +100,7 @@
 }
 
 .timer-actions{ display:flex; gap:10px }
-.start-button, .reset-button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600 }
+.start-button, .reset-button{ padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; transition: background 150ms ease, border-color 150ms ease; }
 .start-button{ background: rgb(100,60,255); color:white }
 .reset-button{ background: rgba(255,255,255,0.06); color:#eee }
 
@@ -89,4 +123,145 @@
 .timer-container.user-dashboard .settings-panel {
     margin-top: auto;
     width: 100%;
+}
+
+.category-picker {
+    width: min(100%, 280px);
+    color: var(--timer-text);
+}
+
+.category-picker > label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--timer-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.category-picker-row {
+    display: flex;
+    gap: 6px;
+}
+
+.category-picker select,
+.category-form input {
+    min-width: 0;
+    padding: 7px 9px;
+    border: 1px solid var(--timer-border);
+    border-radius: var(--timer-radius);
+    background: var(--timer-bg);
+    color: var(--timer-text);
+}
+
+.category-picker select { flex: 1; }
+.category-picker select:disabled,
+.category-add-toggle:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.category-add-toggle {
+    flex-shrink: 0;
+    padding: 7px 9px;
+    border: 1px solid var(--timer-border);
+    border-radius: var(--timer-radius);
+    background: var(--timer-raised);
+    color: var(--timer-text);
+    cursor: pointer;
+}
+
+.category-add-toggle:hover:not(:disabled) { background: var(--timer-hover); }
+
+.category-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.category-form input { flex: 1 1 120px; }
+.category-form button { cursor: pointer; }
+.category-error,
+.category-hint {
+    width: 100%;
+    margin: 4px 0 0;
+    font-size: 11px;
+}
+.category-error { color: #ff8c8c; }
+.category-hint { color: var(--timer-text-muted); }
+
+.timer-stats {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    padding-top: 18px;
+    color: var(--timer-text);
+    overflow-y: auto;
+}
+
+.stats-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.stats-eyebrow {
+    margin: 0 0 4px;
+    color: var(--timer-text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.stats-heading h3 { margin: 0; font-size: 18px; }
+.stats-total {
+    padding: 5px 8px;
+    border: 1px solid var(--timer-border);
+    border-radius: 99px;
+    color: var(--timer-text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.stats-empty {
+    display: flex;
+    flex: 1;
+    min-height: 180px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--timer-text-secondary);
+}
+.stats-empty > span { margin-bottom: 10px; font-size: 30px; color: var(--timer-text-muted); }
+.stats-empty strong { color: var(--timer-text); }
+.stats-empty p { margin: 6px 0 0; font-size: 13px; }
+
+.histogram { display: flex; flex-direction: column; gap: 18px; margin-top: 28px; }
+.histogram-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+    font-size: 13px;
+}
+.histogram-label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.histogram-label strong { color: var(--timer-text-secondary); font-size: 12px; }
+.histogram-track {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: var(--timer-bg);
+}
+.histogram-bar {
+    min-width: 2px;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--timer-accent);
+    transition: width 300ms ease;
+}
+
+@media (max-width: 500px) {
+    .timer-header { align-items: flex-start; }
+    .timer-controls { flex-wrap: wrap; }
+    .stats-heading { flex-direction: column; }
 }

@@ -1,5 +1,6 @@
 /* ── Calendar day cell ───────────────────────────────────────────── */
 .cal-day {
+    position: relative;
     display: flex;
     flex-direction: column;
     min-height: 80px;
@@ -17,9 +18,24 @@
     border-color: var(--obs-border, #3a3a3a);
 }
 
-.cal-day:focus-visible {
+.cal-day:has(.cal-day-hitbox:focus-visible) {
     outline: 2px solid var(--cal-brand, #3f29ba);
     outline-offset: -2px;
+}
+
+.cal-day-hitbox {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.cal-day > *:not(.cal-day-hitbox) {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
 }
 
 /* Other-month cells are dimmer */
@@ -45,6 +61,23 @@
 /* Today highlight (only for current month) */
 .cal-day.is-today {
     border-color: rgba(63, 41, 186, 0.5);
+}
+
+.cal-day.has-focus-snapshot {
+    border-color: rgba(218, 165, 32, 0.68);
+    background: linear-gradient(145deg, rgba(218, 165, 32, 0.13), var(--obs-bg-input, #1e1e1e) 58%);
+    box-shadow: inset 0 0 16px rgba(255, 205, 70, 0.08);
+    animation: focus-day-glow 2.8s ease-in-out infinite;
+}
+
+.cal-day.has-focus-snapshot:hover {
+    border-color: rgba(240, 207, 112, 0.9);
+    background: linear-gradient(145deg, rgba(218, 165, 32, 0.2), var(--obs-bg-hover, #363636) 62%);
+}
+
+@keyframes focus-day-glow {
+    0%, 100% { box-shadow: inset 0 0 12px rgba(255, 205, 70, 0.05), 0 0 0 rgba(218, 165, 32, 0); }
+    50% { box-shadow: inset 0 0 18px rgba(255, 205, 70, 0.12), 0 0 10px rgba(218, 165, 32, 0.16); }
 }
 
 /* ── Day number ──────────────────────────────────────────────────── */
@@ -76,6 +109,38 @@
     font-size: 12px;
     margin-bottom: 4px;
 }
+
+.focus-snapshot-button {
+    position: absolute !important;
+    top: 5px;
+    right: 5px;
+    z-index: 2 !important;
+    width: 27px;
+    height: 27px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgba(218, 165, 32, 0.38);
+    border-radius: 7px;
+    background: rgba(218, 165, 32, 0.12);
+    color: #e7c76e;
+    cursor: pointer;
+    pointer-events: auto !important;
+    transition: background 140ms ease, transform 140ms ease;
+}
+
+.focus-snapshot-button:hover {
+    background: rgba(218, 165, 32, 0.24);
+    transform: translateY(-1px);
+}
+
+.focus-snapshot-button:focus-visible {
+    outline: 2px solid #f0cf70;
+    outline-offset: 2px;
+}
+
+.focus-snapshot-button svg { width: 16px; height: 16px; }
 
 /* ── Event pills ─────────────────────────────────────────────────── */
 .cal-event-pills {

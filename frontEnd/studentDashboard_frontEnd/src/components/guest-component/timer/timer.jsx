@@ -1,5 +1,14 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import alertSound from "../../../assets/alert-444816.mp3"
+import TimerCategoryPicker from "./TimerCategoryPicker"
+import TimerSettings from "./TimerSettings"
+import TimerStats from "./TimerStats"
+import {
+    CATEGORY_STORAGE_KEY,
+    loadCategories,
+    loadTimeLog,
+    TIME_LOG_STORAGE_KEY,
+} from "./timerStorage"
 import "./timer.css"
 
 const THEME = "rgb(100, 60, 255)"
@@ -15,6 +24,7 @@ function loadTimerState() {
     const workMin = Number(localStorage.getItem("pom_work")) || 25
     const breakMin = Number(localStorage.getItem("pom_break")) || 5
     const cycles = Number(localStorage.getItem("pom_cycles")) || 0
+    const fallbackCategory = loadCategories()[0]
 
     try {
         const saved = JSON.parse(localStorage.getItem(TIMER_STATE_KEY))
@@ -35,9 +45,16 @@ function loadTimerState() {
                 ? Math.max(0, Math.ceil((targetTime - Date.now()) / 1000))
                 : (Number.isFinite(secondsLeft) ? secondsLeft : workMin * 60),
             targetTime: isRunning ? targetTime : null,
+            selectedCategory: typeof saved.selectedCategory === "string"
+                ? saved.selectedCategory
+                : fallbackCategory,
         }
     } catch {
-        return { workMin, breakMin, cycles, mode: "work", isRunning: false, secondsLeft: workMin * 60, targetTime: null }
+        return {
+            workMin, breakMin, cycles, mode: "work", isRunning: false,
+            secondsLeft: workMin * 60, targetTime: null,
+            selectedCategory: fallbackCategory,
+        }
     }
 }
 
@@ -51,19 +68,24 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
     const [secondsLeft, setSecondsLeft] = useState(savedTimer.secondsLeft)
     const [cycles, setCycles] = useState(savedTimer.cycles)
     const [showSettings, setShowSettings] = useState(false)
-    const [audioCount, setAudioCount] = useState(2)
+    const [view, setView] = useState("timer")
+    const [categories, setCategories] = useState(loadCategories)
+    const [selectedCategory, setSelectedCategory] = useState(savedTimer.selectedCategory)
+    const [timeLog, setTimeLog] = useState(loadTimeLog)
+    const [audioCount] = useState(2)
     const audioRef = useRef(new Audio(alertSound))
     const intervalRef = useRef(null)
     const targetRef = useRef(savedTimer.targetTime)
+    const completionHandledRef = useRef(false)
 
-    const playAlert = async () => {
+    const playAlert = useCallback(async () => {
         const audio = audioRef.current
         for (let count = 0; count < audioCount; count++) {
             audio.currentTime = 0;
             await audio.play()
             await new Promise(res => audio.addEventListener("ended", res, { once: true }))
         }
-    }
+    }, [audioCount])
 
     useEffect(() => { localStorage.setItem("pom_work", workMin) }, [workMin])
     useEffect(() => { localStorage.setItem("pom_break", breakMin) }, [breakMin])
@@ -72,8 +94,9 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
         localStorage.setItem(TIMER_STATE_KEY, JSON.stringify({
             workMin, breakMin, mode, isRunning, secondsLeft, cycles,
             targetTime: isRunning ? targetRef.current : null,
+            selectedCategory,
         }))
-    }, [workMin, breakMin, mode, isRunning, secondsLeft, cycles])
+    }, [workMin, breakMin, mode, isRunning, secondsLeft, cycles, selectedCategory])
 
     useEffect(() => { // driver function for the timer using epoch diffs
         if (isRunning) {
@@ -90,26 +113,46 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
         }
 
         return () => clearInterval(intervalRef.current)
-    }, [isRunning])
+    }, [isRunning, secondsLeft])
     
 
     useEffect(() => {
-        if (secondsLeft <= 0) {
+        if (secondsLeft > 0) {
+            completionHandledRef.current = false
+            return
+        }
+
+        const completionTimer = window.setTimeout(() => {
+            if (completionHandledRef.current) return
+            completionHandledRef.current = true
             playAlert()
+
             if (mode === "work") {
+                setTimeLog(currentLog => {
+                    const nextLog = [...currentLog, {
+                        category: selectedCategory,
+                        seconds: workMin * 60,
+                        completedAt: new Date().toISOString(),
+                    }]
+                    localStorage.setItem(TIME_LOG_STORAGE_KEY, JSON.stringify(nextLog))
+                    return nextLog
+                })
                 setCycles(c => c + 1)
                 setMode("break")
                 const newSec = breakMin * 60
                 setSecondsLeft(newSec)
                 if (isRunning) targetRef.current = Date.now() + newSec * 1000
-            } else {
-                setMode("work")
-                const newSec = workMin * 60
-                setSecondsLeft(newSec)
-                if (isRunning) targetRef.current = Date.now() + newSec * 1000
+                return
             }
-        }
-    }, [secondsLeft, mode, breakMin, workMin])
+
+            setMode("work")
+            const newSec = workMin * 60
+            setSecondsLeft(newSec)
+            if (isRunning) targetRef.current = Date.now() + newSec * 1000
+        }, 0)
+
+        return () => window.clearTimeout(completionTimer)
+    }, [secondsLeft, mode, breakMin, workMin, isRunning, selectedCategory, playAlert])
 
     const total = mode === "work" ? workMin * 60 : breakMin * 60
     const progress = Math.max(0, Math.min(1, (total - secondsLeft) / total))
@@ -149,66 +192,87 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
         setShowSettings(false)
     }
 
-    const showSettingsPanel = isUserDashboard || showSettings
+    const addCategory = category => {
+        const nextCategories = [...categories, category]
+        setCategories(nextCategories)
+        setSelectedCategory(category)
+        localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(nextCategories))
+    }
+
+    const showSettingsPanel = view === "timer" && (isUserDashboard || showSettings)
+    const categoryLocked = mode === "work" && (isRunning || secondsLeft < workMin * 60)
 
     return (
-        <div className={`timer-container ${showSettings ? 'expanded' : ''} ${isUserDashboard ? 'user-dashboard' : ''}`}>
+        <div
+            className={`timer-container ${showSettingsPanel ? 'expanded' : ''} ${isUserDashboard ? 'user-dashboard' : ''}`}
+            style={{ "--timer-accent": ringColor }}
+        >
             <div className={`timer-header ${hideHeader ? 'timer-header-compact' : ''}`}>
-                {!hideHeader && <h2>Timer</h2>}
-                {!isUserDashboard && (
-                    <div className="timer-controls">
+                {!hideHeader && <h2>{view === "timer" ? "Timer" : "Focus stats"}</h2>}
+                <div className="timer-controls">
+                    <button
+                        type="button"
+                        className="view-toggle-button"
+                        onClick={() => setView(current => current === "timer" ? "stats" : "timer")}
+                        aria-label={view === "timer" ? "Show focus statistics" : "Return to timer"}
+                    >
+                        {view === "timer" ? "View stats" : "Back to timer"}
+                    </button>
+                    {!isUserDashboard && view === "timer" && (
                         <button className="icon-button" title="Settings" onClick={() => setShowSettings(s => !s)}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
-
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
-            <div className="timer-body">
-                <div className="progress-wrap">
-                    <svg className="progress-circle" width="180" height="180" viewBox="0 0 180 180">
-                        <circle cx="90" cy="90" r="70" stroke="rgba(255,255,255,0.08)" strokeWidth="12" fill="none" />
-                        <circle cx="90" cy="90" r="70" stroke={ringColor} strokeWidth="12" fill="none"
-                            strokeDasharray={`${circumference} ${circumference}`}
-                            strokeDashoffset={circumference - dash}
-                            strokeLinecap="round"
+            {view === "timer" ? (
+                <>
+                    <div className="timer-body">
+                        <TimerCategoryPicker
+                            categories={categories}
+                            selectedCategory={selectedCategory}
+                            disabled={categoryLocked}
+                            onSelect={setSelectedCategory}
+                            onAdd={addCategory}
                         />
-                    </svg>
-
-                    <div className="timer-center">
-                        <div className="mode-label">{mode === "work" ? "Work" : "Break"}</div>
-                        <div className="time-display">{formatTime(Math.max(0, secondsLeft))}</div>
-                        <div className="cycle-count">Cycles: {cycles}</div>
+                        <div className="progress-wrap">
+                            <svg className="progress-circle" width="180" height="180" viewBox="0 0 180 180">
+                                <circle cx="90" cy="90" r="70" className="progress-track" strokeWidth="12" fill="none" />
+                                <circle cx="90" cy="90" r="70" stroke={ringColor} strokeWidth="12" fill="none"
+                                    strokeDasharray={`${circumference} ${circumference}`}
+                                    strokeDashoffset={circumference - dash}
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                            <div className="timer-center">
+                                <div className="mode-label">{mode === "work" ? selectedCategory : "Break"}</div>
+                                <div className="time-display">{formatTime(Math.max(0, secondsLeft))}</div>
+                                <div className="cycle-count">Cycles: {cycles}</div>
+                            </div>
+                        </div>
+                        <div className="timer-actions">
+                            <button className="start-button" onClick={toggle}>{isRunning ? 'Pause' : 'Start'}</button>
+                            <button className="reset-button" onClick={reset}>Reset</button>
+                        </div>
                     </div>
-                </div>
-
-                <div className="timer-actions">
-                    <button className="start-button" onClick={toggle}>{isRunning ? 'Pause' : 'Start'}</button>
-                    <button className="reset-button" onClick={reset}>Reset</button>
-                </div>
-            </div>
-
-            {showSettingsPanel && (
-                <div className="settings-panel">
-                    <div className="settings-row">
-                        <label>Work (min)</label>
-                        <input type="number" min="1" value={workMin} onChange={e => setWorkMin(Number(e.target.value))} />
-                    </div>
-                    <div className="settings-row">
-                        <label>Break (min)</label>
-                        <input type="number" min="1" value={breakMin} onChange={e => setBreakMin(Number(e.target.value))} />
-                    </div>
-                    <div className="settings-actions">
-                        <button className="save-button" onClick={() => saveSettings(workMin, breakMin)}>Save</button>
-                        {!isUserDashboard && (
-                            <button className="cancel-button" onClick={() => setShowSettings(false)}>Close</button>
-                        )}
-                    </div>
-                </div>
+                    {showSettingsPanel && (
+                        <TimerSettings
+                            workMin={workMin}
+                            breakMin={breakMin}
+                            isUserDashboard={isUserDashboard}
+                            onWorkChange={setWorkMin}
+                            onBreakChange={setBreakMin}
+                            onSave={() => saveSettings(workMin, breakMin)}
+                            onClose={() => setShowSettings(false)}
+                        />
+                    )}
+                </>
+            ) : (
+                <TimerStats categories={categories} timeLog={timeLog} />
             )}
         </div>
     )
