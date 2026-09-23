@@ -1,141 +1,221 @@
-# Study Productivity App
+# ScholarSync
 
-A full-stack study productivity application for managing study tasks, notes, timers, calendar planning, and Canvas calendar events.
+ScholarSync is a study-planning web application with two experiences:
 
----
+- A guest workspace for trying task planning, a Pomodoro-style timer, a rich-text notepad, note archiving, and a calendar without an account.
+- An authenticated workspace that adds database-backed tasks, notes, Canvas calendar events, and archived notes.
 
-## Overview
-
-This app centralizes study planning tools with saved user tasks, notepad content, calendar views, and Canvas calendar events imported from a calendar link.
-
-**Frontend:** React  
-**Backend:** Spring Boot (Spring Web, Spring Data JPA)  
-**Database:** PostgreSQL  
-**Authentication:** JWT-based app login with React auth context
-
----
-
-## Getting started
-
-### What you need
-
-| Tool | Purpose |
-|------|---------|
-| [Node.js](https://nodejs.org/) (LTS) and **npm** | Install and run the React frontend |
-| **Java 21** | Compile and run the Spring Boot backend |
-| **Maven** (optional) | The backend includes the Maven Wrapper (`./mvnw`), so you can build without a global Maven install |
-| **PostgreSQL** | Database used by the backend for app data |
-
-### After cloning
-
-1. **PostgreSQL** — Create a database named `ScholarSync` (or change the URL in `backend/src/main/resources/application.properties`). Update `spring.datasource.username` and `spring.datasource.password` so they match your local Postgres user.
-
-2. **Backend** — From the repo root:
-
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
-   ```
-
-   On Windows, use `mvnw.cmd spring-boot:run` instead. By default the API listens on **http://localhost:8080**.
-
-3. **Frontend** — In a second terminal, from the repo root:
-
-   ```bash
-   cd frontEnd/studentDashboard_frontEnd
-   npm install
-   npm run dev
-   ```
-
-   Open the URL shown in the terminal (Vite usually serves at **http://localhost:5173**).
-
-Run the backend and frontend together for login, tasks, calendar, and API features that talk to the server.
-
----
+The project is a local-development full-stack application. The frontend currently calls the backend at `http://localhost:8080` and is configured for a Vite development server at `http://localhost:5173`.
 
 ## Features
 
-- Register and log in with JWT authentication
-- Sync Canvas calendar events from a Canvas calendar `.ics` link
-- Create and delete custom user tasks
-- Save notepad content for registered users
-- Use guest dashboard tools without logging in
-- View a standalone calendar page
-- Protected routes using authentication context
-- RESTful backend architecture
-- PostgreSQL persistence for custom data
+### Guest experience
 
----
+- Guest dashboard containing Task List, Timer, and Notes panels.
+- Drag-and-drop panel reordering and resizable panels.
+- Local task storage, including descriptions, priorities, completion state, progress units, and subtasks.
+- Configurable work and break timer with start, pause, reset, cycle counting, alert sound, and persisted timer state.
+- Lexical rich-text notepad with list shortcuts and local persistence.
+- Standalone monthly calendar with locally stored day entries.
+- Local archived notes with titles and content.
+
+Guest data is stored in the browser's `localStorage`; it is not sent to or stored by the backend.
+
+### Authenticated experience
+
+- Registration and login using JWTs.
+- Protected `/dashboard` and `/dashboard/archive` routes.
+- Database-backed user tasks and task deletion.
+- Database-backed notepad content.
+- Database-backed archived notes with create, update, list, and delete operations.
+- Canvas calendar `.ics` import using a user-provided calendar URL.
+- Canvas event refresh, explicit sync-and-override, and per-event deletion.
+- Refreshable user context containing the display name, tasks, notepad, and Canvas events.
+- The same configurable task, timer, and notes dashboard layout as the guest workspace.
+
+## Technical stack
+
+### Frontend
+
+- React 19
+- Vite 7
+- React Router 7
+- Lexical 0.50 for the rich-text editor
+- Browser Fetch API for backend requests
+- React Context API for authentication and authenticated user data
+- ESLint 9
+
+### Backend
+
+- Java 21
+- Spring Boot `4.1.0-SNAPSHOT`
+- Spring Web MVC and Spring Security
+- Spring Data JPA
+- PostgreSQL
+- JJWT 0.11.5 for HS256 JWT creation and validation
+- ical4j 4.2.4 for parsing iCalendar (`.ics`) data
+- Jakarta Bean Validation
+- Lombok
+- Maven Wrapper
+
+## Repository layout
+
+```text
+backend/
+  src/main/java/com/ScholarSync/backend/
+    authentication_module/  Registration, login, JWT, and security configuration
+    global_context_module/ Authenticated user context, tasks, notepad, and archives
+    model_module/          JPA entities and repositories
+    parser_module/         Canvas URL fetching, iCalendar parsing, and event sync
+  src/main/resources/
+    application.properties Database and JWT configuration
+
+frontEnd/studentDashboard_frontEnd/
+  src/
+    components/auth/                 Login and registration
+    components/context/              Auth and user-data contexts
+    components/dashboard/            Authenticated dashboard
+    components/guest-component/      Guest dashboard, calendar, timer, notes, and tasks
+    components/user-component/       Authenticated tasks, sidebar, and archive views
+    components/protected-route/      Client-side route guard
+  package.json
+```
 
 ## Architecture
 
-For a more detailed map of the repository folders and major files, see [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
+### Frontend
 
-### Frontend (React)
+`App.jsx` composes `AuthProvider`, `UserProvider`, and React Router. The route guard checks the locally stored JWT before rendering authenticated routes. `UserProvider` loads the signed-in user's aggregate context from the backend.
 
-- React Router for routing
-- Context API for authentication state
-- Component-based dashboard structure
-- JWT token stored by the auth context and sent in request headers
-- Fetch API for backend communication
+The authenticated dashboard and guest dashboard share the task, timer, and notes concepts, but use different persistence paths:
 
-### Backend (Spring Boot)
+- Guest tasks, notes, timer state, calendar entries, panel order, and panel widths use `localStorage`.
+- Authenticated tasks, the main notepad, Canvas events, and archived notes use the backend. Dashboard panel order and widths remain local browser preferences.
 
-- Layered architecture: **Controller → Service → Repository/Client**
-- DTOs for response shaping
-- REST endpoints returning JSON
-- Canvas calendar `.ics` link parsing and sync
-- Spring Data JPA for user, task, notepad, and Canvas event persistence
+### Backend
 
----
+The backend is organized by feature modules and uses a controller/service/repository structure:
 
-## Key Endpoints
+```text
+HTTP controller
+    -> feature service
+        -> JPA repository and/or external calendar client
+            -> PostgreSQL
+```
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/auth/register` | POST | Creates a user account and returns a JWT token |
-| `/auth/login` | POST | Authenticates a user and returns a JWT token |
-| `/api/context/load` | GET | Loads the signed-in user's display name, Canvas events, saved tasks, and notepad |
-| `/api/context/save-user-tasks` | POST | Saves one or more user-created tasks for the signed-in user |
-| `/api/context/delete-user-task` | DELETE | Deletes a user-created task by ID for the signed-in user |
-| `/api/context/save-notepad` | POST | Saves the signed-in user's notepad content |
-| `/api/canvas-events/sync` | POST | Accepts a Canvas calendar `.ics` URL, parses the events, stores them, and returns the synced events |
-| `/api/canvas-events/test` | GET | Simple backend health/test endpoint |
+- `authentication_module` issues JWTs and installs a stateless JWT filter.
+- `global_context_module` aggregates user data and manages tasks, notepad content, and archived notes.
+- `model_module` contains the `User`, `UserTask`, `CanvasEvent`, and `ArchivedNote` entities and their repositories.
+- `parser_module` fetches and parses remote `.ics` calendars, associates events with a user, and reconciles them by external ID or event content.
 
-Authenticated routes expect a header in this format:
+Spring Security permits `/auth/**` and `/error`. Other application routes require authentication, CORS is configured for `http://localhost:5173`, CSRF is disabled for the stateless API, and the JWT is expected in the `Authorization` header.
+
+## Local setup
+
+### Requirements
+
+- Node.js and npm
+- Java 21
+- PostgreSQL
+
+Maven does not need to be installed globally because the backend includes `mvnw` and `mvnw.cmd`.
+
+### 1. Configure PostgreSQL and the backend
+
+Create a PostgreSQL database named `ScholarSync`, or change `spring.datasource.url` in `backend/src/main/resources/application.properties`. Set the datasource username and password to match the local PostgreSQL installation.
+
+The current development configuration uses `spring.jpa.hibernate.ddl-auto=update`, so Hibernate updates the schema from the JPA entities when the application starts. This is not a replacement for migrations in production.
+
+The JWT secret and expiration are also configured in `application.properties`. Replace the development secret with a strong secret before using the application outside local development, and do not commit real credentials.
+
+### 2. Start the backend
+
+From the repository root:
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+On Windows:
+
+```bat
+mvnw.cmd spring-boot:run
+```
+
+The API listens on `http://localhost:8080` by default.
+
+### 3. Start the frontend
+
+In a second terminal:
+
+```bash
+cd frontEnd/studentDashboard_frontEnd
+npm install
+npm run dev
+```
+
+Open the Vite URL shown in the terminal, normally `http://localhost:5173`.
+
+### Frontend scripts
+
+```bash
+npm run dev      # Start the Vite development server
+npm run build    # Create a production build
+npm run lint     # Run ESLint
+npm run preview  # Preview the production build
+```
+
+## API endpoints
+
+Authentication endpoints return a JWT token:
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/auth/register` | Create an account and return a token |
+| `POST` | `/auth/login` | Authenticate an account and return a token |
+
+Authenticated user-context endpoints:
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/api/context/load` | Load the user's name, Canvas events, tasks, and notepad |
+| `POST` | `/api/context/save-user-tasks` | Reconcile the user's task list with the database |
+| `DELETE` | `/api/context/delete-user-task` | Delete one task belonging to the current user |
+| `POST` | `/api/context/save-notepad` | Save the user's notepad text |
+| `GET` | `/api/context/archived-notes` | List the user's archived notes |
+| `POST` | `/api/context/archived-notes` | Create an archived note |
+| `PUT` | `/api/context/archived-notes/{id}` | Update an archived note |
+| `DELETE` | `/api/context/archived-notes/{id}` | Delete an archived note |
+
+Canvas event endpoints:
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/api/canvas-events/sync` | Fetch and sync events from a supplied `.ics` URL |
+| `POST` | `/api/canvas-events/sync-and-override` | Run the explicit sync-and-override flow using a supplied `.ics` URL |
+| `POST` | `/api/canvas-events/refresh` | Re-sync using the user's previously saved calendar URL |
+| `DELETE` | `/api/canvas-events/{eventId}` | Delete one Canvas event belonging to the current user |
+| `GET` | `/api/canvas-events/test` | Return a simple backend test response |
+
+For protected requests, send:
 
 ```text
 Authorization: Bearer <jwt-token>
 ```
 
----
+## Current limitations
 
-## Security Notes
+- The frontend and backend URLs are hard-coded for local development.
+- Canvas integration uses a user-provided public `.ics` URL; it is not a Canvas OAuth integration.
+- Guest data is browser-local and is not associated with an account.
+- There are no database migrations, production deployment configuration, roles, or CI/CD workflows in the repository.
+- The current backend configuration contains development-oriented datasource and JWT settings that must be replaced for deployment.
 
-- JWT sent through the `Authorization` request header
-- Frontend route protection implemented
-- DTO separation prevents overexposing data
-
----
-
-## Future Improvements
-
-- Full OAuth flow or improved external calendar authorization
-- Role-based access control
-- UI performance optimization
-- Production deployment with HTTPS
-- CI/CD pipeline integration
-- Improved error handling and logging
-
----
-
-
-## Purpose
-
-Designed to simplify academic workload visibility and build full-stack engineering skills through real-world API integration and layered backend architecture.
+## Screenshots
 
 ![Login screen](./README_asset/ss0.png)
-![Guest Page](./README_asset/ss1.png)
+![Guest workspace](./README_asset/ss1.png)
 ![Calendar](./README_asset/ss2.png)
 ![Notes](./README_asset/ss3.png)
-![User Page](./README_asset/ss4.png)
+![Authenticated dashboard](./README_asset/ss4.png)
