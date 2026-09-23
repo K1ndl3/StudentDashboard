@@ -134,6 +134,8 @@ Authorization: Bearer <jwt-token>
 
 Designed to simplify academic workload visibility and build full-stack engineering skills through real-world API integration and layered backend architecture.
 
-![Login screen](./README_asset/login.png)
-![Focus tasks page](./README_asset/focus-tasks.png)
-![Calendar page](./README_asset/calendar.png)
+![Login screen](./README_asset/ss0.png)
+![Guest Page](./README_asset/ss1.png)
+![Calendar](./README_asset/ss2.png)
+![Notes](./README_asset/ss3.png)
+![User Page](./README_asset/ss4.png)
