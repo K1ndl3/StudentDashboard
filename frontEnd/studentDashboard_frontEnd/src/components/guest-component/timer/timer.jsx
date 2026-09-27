@@ -5,6 +5,8 @@ import TimerSettings from "./TimerSettings"
 import TimerStats from "./TimerStats"
 import {
     CATEGORY_STORAGE_KEY,
+    clearFocusHistory,
+    DAILY_SNAPSHOT_EVENT,
     loadCategories,
     loadTimeLog,
     TIME_LOG_STORAGE_KEY,
@@ -97,6 +99,12 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
             selectedCategory,
         }))
     }, [workMin, breakMin, mode, isRunning, secondsLeft, cycles, selectedCategory])
+
+    useEffect(() => {
+        const syncTimeLog = () => setTimeLog(loadTimeLog())
+        window.addEventListener(DAILY_SNAPSHOT_EVENT, syncTimeLog)
+        return () => window.removeEventListener(DAILY_SNAPSHOT_EVENT, syncTimeLog)
+    }, [])
 
     useEffect(() => { // driver function for the timer using epoch diffs
         if (isRunning) {
@@ -199,6 +207,11 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
         localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(nextCategories))
     }
 
+    const refreshFocusHistory = () => {
+        clearFocusHistory()
+        setTimeLog([])
+    }
+
     const showSettingsPanel = view === "timer" && (isUserDashboard || showSettings)
     const categoryLocked = mode === "work" && (isRunning || secondsLeft < workMin * 60)
 
@@ -218,6 +231,16 @@ function Timer({ isUserDashboard = false, accentColor, hideHeader = false }) {
                     >
                         {view === "timer" ? "View stats" : "Back to timer"}
                     </button>
+                    {view === "stats" && (
+                        <button
+                            type="button"
+                            className="view-toggle-button"
+                            onClick={refreshFocusHistory}
+                            aria-label="Refresh focus history and reset all recorded time to zero"
+                        >
+                            Refresh
+                        </button>
+                    )}
                     {!isUserDashboard && view === "timer" && (
                         <button className="icon-button" title="Settings" onClick={() => setShowSettings(s => !s)}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">

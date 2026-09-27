@@ -83,11 +83,31 @@ export function loadDailySnapshots() {
     return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {}
 }
 
+export function clearTimeLog() {
+    localStorage.setItem(TIME_LOG_STORAGE_KEY, JSON.stringify([]))
+}
+
+export function clearFocusHistory() {
+    localStorage.setItem(TIME_LOG_STORAGE_KEY, JSON.stringify([]))
+    localStorage.setItem(DAILY_SNAPSHOTS_STORAGE_KEY, JSON.stringify({}))
+    window.dispatchEvent(new CustomEvent(DAILY_SNAPSHOT_EVENT))
+}
+
 export function saveDailySnapshot(dateKey) {
-    const categories = loadCategories()
-    const dailyLog = loadTimeLog().filter(entry =>
+    const existing = loadDailySnapshots()[dateKey]
+    const timeLog = loadTimeLog()
+    const dailyLog = timeLog.filter(entry =>
         getPacificDateTime(new Date(entry.completedAt)).dateKey === dateKey
     )
+
+    // Avoid overwriting a saved day with an empty snapshot after the live log was reset.
+    if (existing && dailyLog.length === 0) {
+        clearTimeLog()
+        window.dispatchEvent(new CustomEvent(DAILY_SNAPSHOT_EVENT, { detail: existing }))
+        return existing
+    }
+
+    const categories = loadCategories()
     const totals = summarizeTime(categories, dailyLog)
     const snapshot = {
         date: dateKey,
@@ -98,6 +118,7 @@ export function saveDailySnapshot(dateKey) {
     const snapshots = { ...loadDailySnapshots(), [dateKey]: snapshot }
 
     localStorage.setItem(DAILY_SNAPSHOTS_STORAGE_KEY, JSON.stringify(snapshots))
+    clearTimeLog()
     window.dispatchEvent(new CustomEvent(DAILY_SNAPSHOT_EVENT, { detail: snapshot }))
     return snapshot
 }
